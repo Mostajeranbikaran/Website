@@ -9,20 +9,30 @@
     <style>
         body { background: var(--bg); }
         .hidden { display: none !important; }
+        
+        /* صفحه لاگین */
         .login-box { max-width: 400px; margin: 100px auto; background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
         .login-box h2 { color: var(--primary); margin-bottom: 20px; }
+        
+        /* پنل اصلی */
         .admin-container { max-width: 1400px; margin: 40px auto; padding: 20px; }
         .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
         .admin-header h1 { color: var(--primary); font-size: 28px; font-weight: 900; }
+        
+        /* تب‌ها */
         .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
         .tab-btn { background: none; border: none; font-family: inherit; font-size: 16px; font-weight: bold; color: var(--muted); cursor: pointer; padding: 10px 20px; border-radius: 8px; transition: 0.3s; }
         .tab-btn.active { background: #eff6ff; color: var(--primary); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+
+        /* دکمه‌ها */
         .btn-export { background: #10b981; color: white; padding: 12px 24px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-family: inherit; transition: 0.3s; text-decoration: none; }
         .btn-export:hover { background: #059669; }
         .btn-danger { background: #ef4444; color: white; padding: 12px 24px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer; transition: 0.3s; font-family: inherit; }
         .btn-danger:hover { background: #dc2626; }
+
+        /* جدول */
         .table-container { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 1200px; }
         th { background: #f8fafc; padding: 15px; text-align: right; font-weight: 800; color: var(--text); border-bottom: 2px solid #e2e8f0; white-space: nowrap; }
@@ -34,6 +44,7 @@
 </head>
 <body>
 
+    <!-- صفحه لاگین -->
     <div id="login-section">
         <div class="login-box">
             <h2>ورود به پنل مدیریت</h2>
@@ -46,6 +57,7 @@
         </div>
     </div>
 
+    <!-- پنل مدیریت (بعد از لاگین) -->
     <div id="dashboard-section" class="hidden">
         <div class="admin-container">
             <div class="admin-header">
@@ -56,11 +68,13 @@
                 </div>
             </div>
 
+            <!-- تب‌ها -->
             <div class="tabs">
                 <button class="tab-btn active" onclick="switchTab('members')">مدیریت ثبت‌نامی‌ها</button>
                 <button class="tab-btn" onclick="switchTab('settings')">تنظیمات (تغییر رمز)</button>
             </div>
 
+            <!-- تب ثبت‌نامی‌ها -->
             <div id="members-tab" class="tab-content active">
                 <div style="margin-bottom: 15px;">
                     <button onclick="exportToCSV()" class="btn-export"><i class="fas fa-file-excel"></i> خروجی اکسل</button>
@@ -86,6 +100,7 @@
                 </div>
             </div>
 
+            <!-- تب تنظیمات -->
             <div id="settings-tab" class="tab-content">
                 <div class="login-box" style="margin: 20px 0; text-align: right;">
                     <h2 style="text-align: center;">تغییر رمز عبور</h2>
@@ -104,24 +119,35 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // ⚠️ کلیدهای پروژه خودت (از قبل تنظیم شده)
         const SUPABASE_URL = 'https://almalzhslughrfqsthi.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NjgxMDcsImV4cCI6MjEwODM0NDEwN30.IDFFy8WZ8r3hxlOCAwFbsOFkXuwHvvs3Sw8UeIGrc1k';
+        
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let allMembers = [];
 
+        // بررسی لاگین
         async function checkLogin() {
             const pass = document.getElementById('login-password').value;
             const err = document.getElementById('login-error');
+            err.innerText = "در حال بررسی..."; // پیام انتظار
             
-            const { data, error } = await supabase.from('settings').select('value').eq('key', 'admin_password').single();
+            // گرفتن رمز از دیتابیس
+            const { data, error } = await supabase.from('settings').select('value').eq('key', 'admin_password').maybeSingle();
             
-            if (error || !data) {
-                err.innerText = "خطا در اتصال به دیتابیس!";
+            if (error) {
+                err.innerText = "خطا در اتصال به دیتابیس: " + error.message;
+                return;
+            }
+
+            if (!data) {
+                err.innerText = "رمز در دیتابیس یافت نشد! لطفاً با Supabase تماس بگیرید.";
                 return;
             }
 
             if (pass === data.value) {
+                err.innerText = "";
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('dashboard-section').classList.remove('hidden');
                 loadMembers();
@@ -130,12 +156,15 @@
             }
         }
 
+        // خروج
         function logout() {
             document.getElementById('login-section').classList.remove('hidden');
             document.getElementById('dashboard-section').classList.add('hidden');
             document.getElementById('login-password').value = '';
+            document.getElementById('login-error').innerText = "";
         }
 
+        // تب‌ها
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -143,6 +172,7 @@
             event.target.classList.add('active');
         }
 
+        // تغییر رمز
         async function changePassword() {
             const newPass = document.getElementById('new-password').value;
             const msg = document.getElementById('settings-msg');
@@ -165,8 +195,11 @@
             }
         }
 
+        // لود کردن ثبت‌نامی‌ها
         async function loadMembers() {
             const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">در حال بارگذاری...</td></tr>';
+            
             const { data, error } = await supabase.from('members').select('*').order('created_at', { ascending: false });
 
             if (error) {
@@ -203,6 +236,7 @@
             });
         }
 
+        // خروجی اکسل
         function exportToCSV() {
             if (allMembers.length === 0) { alert("داده‌ای وجود ندارد!"); return; }
 
