@@ -3,192 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پنل مدیریت | مرکز توانمندسازی</title>
+    <title>پنل مدیریت مرکز توانمندسازی</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background: var(--bg); }
+        /* استایل‌های اختصاصی این صفحه */
+        body { background: #f8fafc; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding-top: 50px; }
         
-        /* این کلاس برای مخفی کردن است */
-        .d-none { display: none !important; }
+        .container-box { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 90%; max-width: 1200px; text-align: center; }
         
-        /* صفحه لاگین */
-        .login-box { max-width: 400px; margin: 80px auto; background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
-        .login-box h2 { color: var(--primary); margin-bottom: 20px; font-size: 22px; }
+        /* استایل صفحه لاگین */
+        #login-box { max-width: 400px; margin: 0 auto; }
+        #login-box h2 { color: #1e3a8a; margin-bottom: 20px; }
+        #login-box input { width: 100%; padding: 14px; border: 1px solid #cbd5e1; border-radius: 10px; font-family: inherit; margin-bottom: 15px; font-size: 16px; text-align: center; }
+        #login-box button { width: 100%; padding: 14px; background: #1e3a8a; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        #login-box button:hover { background: #152c6b; }
         
-        /* پنل اصلی */
-        .admin-container { max-width: 1400px; margin: 40px auto; padding: 20px; }
-        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
-        .admin-header h1 { color: var(--primary); font-size: 28px; font-weight: 900; }
+        /* استایل پنل */
+        #panel-box { display: none; text-align: right; }
+        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
+        .header-actions h2 { color: #1e3a8a; margin: 0; }
+        .header-actions button { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-family: inherit; font-weight: bold; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-excel { background: #10b981; color: white; margin-bottom: 15px; }
         
-        /* دکمه‌ها */
-        .btn-export { background: #10b981; color: white; padding: 12px 24px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-family: inherit; transition: 0.3s; text-decoration: none; }
-        .btn-export:hover { background: #059669; }
-        .btn-danger { background: #ef4444; color: white; padding: 12px 24px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer; transition: 0.3s; font-family: inherit; }
-        .btn-danger:hover { background: #dc2626; }
-
-        /* جدول */
-        .table-container { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 1200px; }
-        th { background: #f8fafc; padding: 15px; text-align: right; font-weight: 800; color: var(--text); border-bottom: 2px solid #e2e8f0; white-space: nowrap; }
-        td { padding: 15px; border-bottom: 1px solid #e2e8f0; color: var(--muted); font-size: 14px; white-space: nowrap; }
-        tr:hover td { background: #f8fafc; }
-        .photo-link { color: var(--primary); text-decoration: none; font-weight: bold; }
-        .photo-link:hover { text-decoration: underline; }
+        /* استایل جدول */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px 15px; text-align: right; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f8fafc; color: #0f172a; font-weight: bold; }
+        td { color: #475569; font-size: 14px; }
     </style>
 </head>
 <body>
 
     <!-- صفحه لاگین -->
-    <div id="login-section">
-        <div class="login-box">
-            <h2>ورود به پنل مدیریت</h2>
-            <div class="form-group" style="margin-bottom: 20px; text-align: right;">
-                <label>رمز عبور</label>
-                <input type="password" id="login-password" placeholder="رمز را وارد کنید (1234)" style="width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 10px; font-family: inherit;">
-            </div>
-            <!-- دکمه ورود با onclick ساده -->
-            <button onclick="doLogin()" class="btn btn-primary" style="width: 100%;">ورود</button>
-            <p id="login-error" style="color: red; margin-top: 15px; font-weight: bold;"></p>
+    <div id="login-box" class="container-box">
+        <h2>ورود به پنل مدیریت</h2>
+        <input type="password" id="password-input" placeholder="رمز عبور (1234)">
+        <button onclick="login()">ورود به پنل</button>
+        <p id="error-msg" style="color: red; margin-top: 15px; font-weight: bold;"></p>
+    </div>
+
+    <!-- پنل مدیریت (بعد از ورود) -->
+    <div id="panel-box" class="container-box">
+        <div class="header-actions">
+            <h2>لیست ثبت‌نامی‌ها</h2>
+            <button onclick="logout()" class="btn-danger">خروج</button>
+        </div>
+        
+        <button onclick="downloadExcel()" class="btn-excel"><i class="fas fa-file-excel"></i> دانلود خروجی اکسل</button>
+        
+        <div style="overflow-x: auto;">
+            <table id="data-table">
+                <thead>
+                    <tr>
+                        <th>ردیف</th>
+                        <th>نام</th>
+                        <th>نام خانوادگی</th>
+                        <th>شماره همراه</th>
+                        <th>نوع عضویت</th>
+                        <th>تاریخ ثبت</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <tr><td colspan="6" style="text-align:center;">در حال بارگذاری...</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- پنل مدیریت -->
-    <div id="dashboard-section" class="d-none">
-        <div class="admin-container">
-            <div class="admin-header">
-                <h1>پنل مدیریت ثبت‌نامی‌ها</h1>
-                <div style="display: flex; gap: 10px;">
-                    <a href="index.html" class="btn-export" style="background: var(--primary);"><i class="fas fa-arrow-right"></i> بازگشت به فرم</a>
-                    <button onclick="doLogout()" class="btn-danger"><i class="fas fa-sign-out-alt"></i> خروج</button>
-                </div>
-            </div>
-
-            <div style="margin-bottom: 15px;">
-                <button onclick="exportToCSV()" class="btn-export"><i class="fas fa-file-excel"></i> خروجی اکسل</button>
-            </div>
-
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ردیف</th>
-                            <th>نوع عضویت</th>
-                            <th>نام و نام خانوادگی</th>
-                            <th>کد ملی</th>
-                            <th>شماره همراه</th>
-                            <th>وضعیت مسکن</th>
-                            <th>شغل</th>
-                            <th>تحصیلات</th>
-                            <th>تاریخ ثبت</th>
-                            <th>عکس</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-body"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
+    <!-- اسکریپت Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // ====== کلیدهای Supabase (همونی که توی index.html گذاشتی) ======
         const SUPABASE_URL = 'https://almalzhslughrfqsthi.supabase.co'; 
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // کلید خودت رو اینجا بذار (همون قبلی)
-        
-        // کلید رو دقیق جایگزین کن (همونی که توی index.html هست)
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NjgxMDcsImV4cCI6MjEwODM0NDEwN30.IDFFy8WZ8r3hxlOCAwFbsOFkXuwHvvs3Sw8UeIGrc1k';
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const ADMIN_PASSWORD = '1234';
-        let allMembers = [];
+        let dataList = []; // برای ذخیره اطلاعات و خروجی اکسل
 
         // تابع ورود
-        function doLogin() {
-            const pass = document.getElementById('login-password').value;
-            const err = document.getElementById('login-error');
+        function login() {
+            const pass = document.getElementById('password-input').value;
+            const err = document.getElementById('error-msg');
             
-            if (pass === ADMIN_PASSWORD) {
+            if (pass === '1234') {
                 err.innerText = "";
-                document.getElementById('login-section').classList.add('d-none');
-                document.getElementById('dashboard-section').classList.remove('d-none');
-                loadMembers();
+                document.getElementById('login-box').style.display = 'none';
+                document.getElementById('panel-box').style.display = 'block';
+                loadData(); // بارگذاری اطلاعات از دیتابیس
             } else {
                 err.innerText = "رمز عبور اشتباه است!";
             }
         }
 
         // تابع خروج
-        function doLogout() {
-            document.getElementById('login-section').classList.remove('d-none');
-            document.getElementById('dashboard-section').classList.add('d-none');
-            document.getElementById('login-password').value = '';
+        function logout() {
+            document.getElementById('login-box').style.display = 'block';
+            document.getElementById('panel-box').style.display = 'none';
+            document.getElementById('password-input').value = '';
         }
 
-        // لود اطلاعات
-        async function loadMembers() {
+        // بارگذاری اطلاعات از دیتابیس
+        async function loadData() {
             const tbody = document.getElementById('table-body');
-            tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">در حال بارگذاری...</td></tr>';
-            
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">در حال دریافت اطلاعات...</td></tr>';
+
             const { data, error } = await supabase.from('members').select('*').order('created_at', { ascending: false });
 
             if (error) {
-                tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color:red;">خطا: ${error.message}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">خطا: ${error.message}</td></tr>`;
                 return;
             }
 
-            allMembers = data;
+            dataList = data; // ذخیره برای اکسل
             tbody.innerHTML = '';
 
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding: 40px;">هنوز کسی ثبت‌نام نکرده است.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">هنوز کسی ثبت‌نام نکرده است.</td></tr>';
                 return;
             }
 
             data.forEach((item, index) => {
                 const date = new Date(item.created_at).toLocaleDateString('fa-IR');
-                const photo = item.photo_url ? `<a href="${item.photo_url}" target="_blank" class="photo-link">مشاهده</a>` : '-';
-                
                 tbody.innerHTML += `
                     <tr>
                         <td>${index + 1}</td>
-                        <td><strong>${item.membership_type}</strong></td>
-                        <td>${item.first_name} ${item.last_name}</td>
-                        <td>${item.national_id}</td>
+                        <td>${item.first_name}</td>
+                        <td>${item.last_name}</td>
                         <td>${item.mobile}</td>
-                        <td>${item.housing_status || '-'}</td>
-                        <td>${item.job || '-'}</td>
-                        <td>${item.education || '-'}</td>
+                        <td>${item.membership_type}</td>
                         <td>${date}</td>
-                        <td>${photo}</td>
                     </tr>
                 `;
             });
         }
 
         // خروجی اکسل
-        function exportToCSV() {
-            if (allMembers.length === 0) { alert("داده‌ای وجود ندارد!"); return; }
+        function downloadExcel() {
+            if (dataList.length === 0) {
+                alert("اطلاعاتی برای دانلود وجود ندارد!");
+                return;
+            }
 
-            const headers = ["نوع عضویت", "نام", "نام خانوادگی", "کد ملی", "تاریخ تولد", "وضعیت تاهل", "تعداد فرزندان", "آدرس", "کد پستی", "شماره همراه", "تلفن ثابت", "وضعیت مسکن", "شغل", "تحصیلات", "کد بیمه", "بیمه تکمیلی", "لینک عکس", "تاریخ ثبت"];
-            let csvContent = "\uFEFF" + headers.join(",") + "\n";
+            // ساخت ساختار CSV
+            const headers = ["نام", "نام خانوادگی", "کد ملی", "شماره همراه", "نوع عضویت", "وضعیت مسکن", "شغل", "تحصیلات", "تاریخ ثبت"];
+            let csvContent = "\uFEFF"; // برای نمایش صحیح فارسی در اکسل
+            csvContent += headers.join(",") + "\n";
 
-            allMembers.forEach(item => {
+            dataList.forEach(item => {
+                const date = new Date(item.created_at).toLocaleDateString('fa-IR');
                 const row = [
-                    item.membership_type, item.first_name, item.last_name, item.national_id,
-                    item.birth_date || "", item.marital_status || "", item.children || "",
-                    `"${item.address}"`, item.postal_code || "", item.mobile, item.landline || "",
-                    item.housing_status || "", item.job || "", item.education || "",
-                    item.social_security || "", item.supplementary_insurance || "",
-                    item.photo_url || "", new Date(item.created_at).toLocaleDateString('fa-IR')
+                    item.first_name, item.last_name, item.national_id, item.mobile, 
+                    item.membership_type, item.housing_status || "-", item.job || "-", item.education || "-", date
                 ];
                 csvContent += row.join(",") + "\n";
             });
 
+            // دانلود فایل
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            link.download = "members_export.csv";
+            link.download = "members_data.csv";
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
