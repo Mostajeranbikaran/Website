@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { background: var(--bg); }
-        .hidden { display: none !important; }
+        
+        /* این کلاس برای مخفی کردن است */
+        .d-none { display: none !important; }
         
         /* صفحه لاگین */
         .login-box { max-width: 400px; margin: 80px auto; background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
@@ -45,23 +47,23 @@
                 <label>رمز عبور</label>
                 <input type="password" id="login-password" placeholder="رمز را وارد کنید (1234)" style="width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 10px; font-family: inherit;">
             </div>
-            <button onclick="checkLogin()" class="btn btn-primary" style="width: 100%;">ورود</button>
+            <!-- دکمه ورود با onclick ساده -->
+            <button onclick="doLogin()" class="btn btn-primary" style="width: 100%;">ورود</button>
             <p id="login-error" style="color: red; margin-top: 15px; font-weight: bold;"></p>
         </div>
     </div>
 
     <!-- پنل مدیریت -->
-    <div id="dashboard-section" class="hidden">
+    <div id="dashboard-section" class="d-none">
         <div class="admin-container">
             <div class="admin-header">
                 <h1>پنل مدیریت ثبت‌نامی‌ها</h1>
                 <div style="display: flex; gap: 10px;">
                     <a href="index.html" class="btn-export" style="background: var(--primary);"><i class="fas fa-arrow-right"></i> بازگشت به فرم</a>
-                    <button onclick="logout()" class="btn-danger"><i class="fas fa-sign-out-alt"></i> خروج</button>
+                    <button onclick="doLogout()" class="btn-danger"><i class="fas fa-sign-out-alt"></i> خروج</button>
                 </div>
             </div>
 
-            <!-- دکمه خروجی اکسل -->
             <div style="margin-bottom: 15px;">
                 <button onclick="exportToCSV()" class="btn-export"><i class="fas fa-file-excel"></i> خروجی اکسل</button>
             </div>
@@ -91,37 +93,39 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const SUPABASE_URL = 'https://almalzhslughrfqsthi.supabase.co'; 
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NjgxMDcsImV4cCI6MjEwODM0NDEwN30.IDFFy8WZ8r3hxlOCAwFbsOFkXuwHvvs3Sw8UeIGrc1k';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // کلید خودت رو اینجا بذار (همون قبلی)
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // کلید رو دقیق جایگزین کن (همونی که توی index.html هست)
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NjgxMDcsImV4cCI6MjEwODM0NDEwN30.IDFFy8WZ8r3hxlOCAwFbsOFkXuwHvvs3Sw8UeIGrc1k';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // ====== رمز عبور اینجا تنظیم شده است ======
         const ADMIN_PASSWORD = '1234';
         let allMembers = [];
 
-        // بررسی لاگین
-        function checkLogin() {
+        // تابع ورود
+        function doLogin() {
             const pass = document.getElementById('login-password').value;
             const err = document.getElementById('login-error');
             
             if (pass === ADMIN_PASSWORD) {
                 err.innerText = "";
-                document.getElementById('login-section').classList.add('hidden');
-                document.getElementById('dashboard-section').classList.remove('hidden');
-                loadMembers(); // لود کردن اطلاعات
+                document.getElementById('login-section').classList.add('d-none');
+                document.getElementById('dashboard-section').classList.remove('d-none');
+                loadMembers();
             } else {
                 err.innerText = "رمز عبور اشتباه است!";
             }
         }
 
-        // خروج
-        function logout() {
-            document.getElementById('login-section').classList.remove('hidden');
-            document.getElementById('dashboard-section').classList.add('hidden');
+        // تابع خروج
+        function doLogout() {
+            document.getElementById('login-section').classList.remove('d-none');
+            document.getElementById('dashboard-section').classList.add('d-none');
             document.getElementById('login-password').value = '';
         }
 
-        // لود ثبت‌نامی‌ها از دیتابیس
+        // لود اطلاعات
         async function loadMembers() {
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">در حال بارگذاری...</td></tr>';
