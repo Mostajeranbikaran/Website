@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ثبت‌نام | مرکز توانمندسازی مستاجران و بیکاران</title>
+    <meta name="description" content="عضویت رایگان در مرکز توانمندسازی مستاجران و بیکاران. حمایت از مستاجران، اشتغال‌زایی و مشاوره شغلی.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="container">
+        <div class="card">
+            
+            <!-- هدر فرم -->
+            <div class="form-header">
+                <img src="logo.png" alt="لوگوی مرکز توانمندسازی مستاجران و بیکاران">
+                <div style="text-align: left;">
+                    <h2>مرکز توانمندسازی مستاجران و بیکاران</h2>
+                    <p>شماره مجوز: 1000534408</p>
+                    <p>تلفن تماس: ۰۹۱۴۴۱۲۳۵۰۴</p>
+                </div>
+            </div>
+
+            <div class="print-date" id="print-date"></div>
+
+            <!-- دکمه‌های بالای فرم -->
+            <div class="btn-group no-print" style="margin-bottom: 30px;">
+                <button onclick="window.print()" class="btn btn-secondary"><i class="fas fa-print"></i> چاپ / ذخیره PDF</button>
+                <a href="admin.html" class="btn btn-primary"><i class="fas fa-user-shield"></i> پنل مدیریت</a>
+            </div>
+
+            <!-- فرم اصلی -->
+            <form id="membership-form">
+                <!-- نوع عضویت -->
+                <div class="form-section">
+                    <h3 class="form-section-title"><i class="fas fa-users"></i> نوع عضویت</h3>
+                    <div class="form-group">
+                        <label>نوع همکاری خود را انتخاب کنید:</label>
+                        <select name="membership_type" required>
+                            <option value="">انتخاب کنید...</option>
+                            <option value="حامی مالی">حامی مالی</option>
+                            <option value="حامی غیر مالی">حامی غیر مالی</option>
+                            <option value="داوطلب همکاری">داوطلب همکاری</option>
+                            <option value="مستاجر">مستاجر</option>
+                            <option value="بیکار">بیکار</option>
+                            <option value="مستاجر و بیکار">مستاجر و بیکار</option>
+                            <option value="مشاور کارآفرینی و کاریابی">مشاور کارآفرینی و کاریابی</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- اطلاعات هویتی -->
+                <div class="form-section">
+                    <h3 class="form-section-title"><i class="fas fa-user"></i> اطلاعات هویتی</h3>
+                    <div class="form-row">
+                        <div class="form-group"><label>نام</label><input type="text" name="first_name" required></div>
+                        <div class="form-group"><label>نام خانوادگی</label><input type="text" name="last_name" required></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>کد ملی</label><input type="text" name="national_id" required></div>
+                        <div class="form-group"><label>تاریخ تولد</label><input type="text" name="birth_date" placeholder="1370/01/01"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>وضعیت تاهل</label>
+                            <select name="marital_status"><option value="">انتخاب...</option><option value="متاهل">متاهل</option><option value="مجرد">مجرد</option></select>
+                        </div>
+                        <div class="form-group"><label>تعداد و سن فرزندان</label><input type="text" name="children" placeholder="2 فرزند (5 و 8 ساله)"></div>
+                    </div>
+                </div>
+
+                <!-- اطلاعات تماس -->
+                <div class="form-section">
+                    <h3 class="form-section-title"><i class="fas fa-home"></i> اطلاعات تماس و سکونت</h3>
+                    <div class="form-group"><label>نشانی کامل</label><textarea name="address" rows="2" required></textarea></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>کد پستی</label><input type="text" name="postal_code"></div>
+                        <div class="form-group"><label>شماره همراه</label><input type="tel" name="mobile" required></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>تلفن ثابت</label><input type="tel" name="landline"></div>
+                        <div class="form-group"><label>وضعیت مسکن</label>
+                            <select name="housing_status"><option value="">انتخاب...</option><option value="ملکی">ملکی</option><option value="پدری">پدری</option><option value="ورثه ای">ورثه ای</option><option value="اوقافی">اوقافی</option><option value="استیجاری">استیجاری</option></select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- اطلاعات شغلی -->
+                <div class="form-section">
+                    <h3 class="form-section-title"><i class="fas fa-briefcase"></i> اطلاعات شغلی و تحصیلی</h3>
+                    <div class="form-row">
+                        <div class="form-group"><label>شغل (دقیق)</label><input type="text" name="job"></div>
+                        <div class="form-group"><label>تحصیلات</label><input type="text" name="education"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>کد بیمه تامین اجتماعی</label><input type="text" name="social_security"></div>
+                        <div class="form-group"><label>بیمه تکمیلی دارید؟</label>
+                            <select name="supplementary_insurance"><option value="">انتخاب...</option><option value="بله">بله</option><option value="خیر">خیر</option></select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- آپلود عکس -->
+                <div class="form-section no-print">
+                    <h3 class="form-section-title"><i class="fas fa-camera"></i> بارگذاری عکس</h3>
+                    <div class="form-group">
+                        <label>عکس خود را انتخاب کنید (JPG / PNG)</label>
+                        <input type="file" name="attachment" accept="image/*">
+                    </div>
+                </div>
+
+                <!-- دکمه ارسال -->
+                <div class="btn-group no-print">
+                    <button type="submit" id="submit-btn" class="btn btn-primary" style="width: 100%;">ارسال فرم و ثبت‌نام</button>
+                </div>
+                <p id="form-msg" style="text-align: center; margin-top: 15px; font-weight: bold; color: var(--primary);"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- اسکریپت Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // ⚠️ ⚠️ ⚠️ این دو خط را با کلیدهای پروژه خودت جایگزین کن
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; 
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // نمایش تاریخ
+        document.getElementById('print-date').innerText = "تاریخ ثبت: " + new Date().toLocaleDateString('fa-IR');
+
+        // ارسال فرم
+        document.getElementById('membership-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            const msg = document.getElementById('form-msg');
+            
+            btn.disabled = true;
+            btn.innerText = "در حال ارسال...";
+            msg.innerText = "";
+
+            const formData = new FormData(e.target);
+            
+            // ۱. آپلود عکس
+            let photoUrl = null;
+            const photoFile = formData.get('attachment');
+            if (photoFile && photoFile.size > 0) {
+                const fileExt = photoFile.name.split('.').pop();
+                const fileName = `${Date.now()}.${fileExt}`;
+                const { error: uploadError } = await supabase.storage.from('photos').upload(fileName, photoFile);
+                if (!uploadError) {
+                    const { data: publicUrlData } = supabase.storage.from('photos').getPublicUrl(fileName);
+                    photoUrl = publicUrlData.publicUrl;
+                }
+            }
+
+            // ۲. ذخیره اطلاعات
+            const memberData = {
+                membership_type: formData.get('membership_type'),
+                first_name: formData.get('first_name'),
+                last_name: formData.get('last_name'),
+                national_id: formData.get('national_id'),
+                birth_date: formData.get('birth_date'),
+                marital_status: formData.get('marital_status'),
+                children: formData.get('children'),
+                address: formData.get('address'),
+                postal_code: formData.get('postal_code'),
+                mobile: formData.get('mobile'),
+                landline: formData.get('landline'),
+                housing_status: formData.get('housing_status'),
+                job: formData.get('job'),
+                education: formData.get('education'),
+                social_security: formData.get('social_security'),
+                supplementary_insurance: formData.get('supplementary_insurance'),
+                photo_url: photoUrl
+            };
+
+            const { error } = await supabase.from('members').insert([memberData]);
+
+            if (error) {
+                msg.style.color = "red";
+                msg.innerText = "خطا: " + error.message;
+                btn.disabled = false;
+                btn.innerText = "ارسال فرم و ثبت‌نام";
+            } else {
+                msg.style.color = "green";
+                msg.innerText = "✅ ثبت‌نام شما با موفقیت انجام شد!";
+                
+                setTimeout(() => { window.print(); }, 500);
+                e.target.reset();
+                btn.disabled = false;
+                btn.innerText = "ارسال فرم و ثبت‌نام";
+            }
+        });
+    </script>
+</body>
+</html>
