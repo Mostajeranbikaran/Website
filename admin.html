@@ -9,20 +9,30 @@
     <style>
         body { background: var(--bg); }
         .hidden { display: none !important; }
-        .login-box { max-width: 400px; margin: 100px auto; background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
-        .login-box h2 { color: var(--primary); margin-bottom: 20px; }
+        
+        /* صفحه لاگین */
+        .login-box { max-width: 400px; margin: 80px auto; background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
+        .login-box h2 { color: var(--primary); margin-bottom: 20px; font-size: 22px; }
+        
+        /* پنل اصلی */
         .admin-container { max-width: 1400px; margin: 40px auto; padding: 20px; }
         .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
         .admin-header h1 { color: var(--primary); font-size: 28px; font-weight: 900; }
+        
+        /* تب‌ها */
         .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
         .tab-btn { background: none; border: none; font-family: inherit; font-size: 16px; font-weight: bold; color: var(--muted); cursor: pointer; padding: 10px 20px; border-radius: 8px; transition: 0.3s; }
         .tab-btn.active { background: #eff6ff; color: var(--primary); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+
+        /* دکمه‌ها */
         .btn-export { background: #10b981; color: white; padding: 12px 24px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-family: inherit; transition: 0.3s; text-decoration: none; }
         .btn-export:hover { background: #059669; }
         .btn-danger { background: #ef4444; color: white; padding: 12px 24px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer; transition: 0.3s; font-family: inherit; }
         .btn-danger:hover { background: #dc2626; }
+
+        /* جدول */
         .table-container { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 1200px; }
         th { background: #f8fafc; padding: 15px; text-align: right; font-weight: 800; color: var(--text); border-bottom: 2px solid #e2e8f0; white-space: nowrap; }
@@ -62,10 +72,13 @@
                 </div>
             </div>
 
+            <!-- تب‌ها -->
             <div class="tabs">
                 <button class="tab-btn active" onclick="switchTab('members')">مدیریت ثبت‌نامی‌ها</button>
+                <button class="tab-btn" onclick="switchTab('settings')">تغییر رمز عبور</button>
             </div>
 
+            <!-- تب ثبت‌نامی‌ها -->
             <div id="members-tab" class="tab-content active">
                 <div style="margin-bottom: 15px;">
                     <button onclick="exportToCSV()" class="btn-export"><i class="fas fa-file-excel"></i> خروجی اکسل</button>
@@ -90,6 +103,23 @@
                     </table>
                 </div>
             </div>
+
+            <!-- تب تغییر رمز -->
+            <div id="settings-tab" class="tab-content">
+                <div class="login-box" style="margin: 20px auto; text-align: right;">
+                    <h2 style="text-align: center;">تغییر رمز عبور</h2>
+                    <p style="color: var(--muted); margin-bottom: 20px; font-size: 14px; text-align: center;">رمز جدید خود را وارد کنید. این رمز در سیستم امنیتی Supabase ذخیره می‌شود.</p>
+                    
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label>رمز عبور جدید</label>
+                        <input type="password" id="new-password" placeholder="رمز جدید (حداقل ۶ کاراکتر)" style="width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 10px; font-family: inherit;">
+                    </div>
+                    
+                    <button onclick="changePassword()" class="btn btn-primary" style="width: 100%;">ذخیره رمز جدید</button>
+                    <p id="settings-msg" style="margin-top: 15px; font-weight: bold; text-align: center;"></p>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -102,7 +132,7 @@
 
         let allMembers = [];
 
-        // بررسی لاگین با ایمیل و رمز Supabase
+        // بررسی لاگین
         async function checkLogin() {
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
@@ -130,7 +160,38 @@
             document.getElementById('login-password').value = '';
         }
 
-        // لود کردن ثبت‌نامی‌ها
+        // تب‌ها
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // تغییر رمز
+        async function changePassword() {
+            const newPass = document.getElementById('new-password').value;
+            const msg = document.getElementById('settings-msg');
+
+            if (newPass.length < 6) {
+                msg.style.color = "red";
+                msg.innerText = "رمز باید حداقل ۶ کاراکتر باشد!";
+                return;
+            }
+
+            const { error } = await supabase.auth.updateUser({ password: newPass });
+
+            if (error) {
+                msg.style.color = "red";
+                msg.innerText = "خطا در تغییر رمز: " + error.message;
+            } else {
+                msg.style.color = "green";
+                msg.innerText = "✅ رمز عبور با موفقیت تغییر کرد!";
+                document.getElementById('new-password').value = '';
+            }
+        }
+
+        // لود ثبت‌نامی‌ها
         async function loadMembers() {
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">در حال بارگذاری...</td></tr>';
