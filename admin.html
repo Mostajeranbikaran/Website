@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت | مرکز توانمندسازی</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: var(--bg); }
+        .admin-container { max-width: 1300px; margin: 40px auto; padding: 20px; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
+        .admin-header h1 { color: var(--primary); font-size: 28px; font-weight: 900; }
+        .btn-export { background: #10b981; color: white; padding: 12px 24px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; font-family: inherit; transition: 0.3s; }
+        .btn-export:hover { background: #059669; }
+        .table-container { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th { background: #f8fafc; padding: 15px; text-align: right; font-weight: 800; color: var(--text); border-bottom: 2px solid #e2e8f0; white-space: nowrap; }
+        td { padding: 15px; border-bottom: 1px solid #e2e8f0; color: var(--muted); font-size: 14px; white-space: nowrap; }
+        tr:hover td { background: #f8fafc; }
+        .photo-link { color: var(--primary); text-decoration: none; font-weight: bold; }
+        .photo-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>پنل مدیریت ثبت‌نامی‌ها</h1>
+            <div style="display: flex; gap: 10px;">
+                <a href="index.html" class="btn-export" style="background: var(--primary); text-decoration: none;"><i class="fas fa-arrow-right"></i> بازگشت به فرم</a>
+                <button onclick="exportToCSV()" class="btn-export"><i class="fas fa-file-excel"></i> خروجی اکسل</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="members-table">
+                <thead>
+                    <tr>
+                        <th>ردیف</th>
+                        <th>نوع عضویت</th>
+                        <th>نام و نام خانوادگی</th>
+                        <th>کد ملی</th>
+                        <th>شماره همراه</th>
+                        <th>وضعیت مسکن</th>
+                        <th>شغل</th>
+                        <th>تاریخ ثبت</th>
+                        <th>عکس</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- اطلاعات لود میشه -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // ⚠️ ⚠️ ⚠️ کلیدهای پروژه خودت
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; 
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let allMembers = [];
+
+        async function loadMembers() {
+            const tbody = document.getElementById('table-body');
+            const { data, error } = await supabase.from('members').select('*').order('created_at', { ascending: false });
+
+            if (error) {
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:red;">خطا: ${error.message}</td></tr>`;
+                return;
+            }
+
+            allMembers = data;
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding: 40px;">هنوز کسی ثبت‌نام نکرده است.</td></tr>';
+                return;
+            }
+
+            data.forEach((item, index) => {
+                const date = new Date(item.created_at).toLocaleDateString('fa-IR');
+                const photo = item.photo_url ? `<a href="${item.photo_url}" target="_blank" class="photo-link">مشاهده</a>` : '-';
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td><strong>${item.membership_type}</strong></td>
+                        <td>${item.first_name} ${item.last_name}</td>
+                        <td>${item.national_id}</td>
+                        <td>${item.mobile}</td>
+                        <td>${item.housing_status || '-'}</td>
+                        <td>${item.job || '-'}</td>
+                        <td>${date}</td>
+                        <td>${photo}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function exportToCSV() {
+            if (allMembers.length === 0) { alert("داده‌ای وجود ندارد!"); return; }
+
+            const headers = ["نوع عضویت", "نام", "نام خانوادگی", "کد ملی", "تاریخ تولد", "وضعیت تاهل", "تعداد فرزندان", "آدرس", "کد پستی", "شماره همراه", "تلفن ثابت", "وضعیت مسکن", "شغل", "تحصیلات", "کد بیمه", "بیمه تکمیلی", "لینک عکس", "تاریخ ثبت"];
+            let csvContent = "\uFEFF" + headers.join(",") + "\n";
+
+            allMembers.forEach(item => {
+                const row = [
+                    item.membership_type, item.first_name, item.last_name, item.national_id,
+                    item.birth_date || "", item.marital_status || "", item.children || "",
+                    `"${item.address}"`, item.postal_code || "", item.mobile, item.landline || "",
+                    item.housing_status || "", item.job || "", item.education || "",
+                    item.social_security || "", item.supplementary_insurance || "",
+                    item.photo_url || "", new Date(item.created_at).toLocaleDateString('fa-IR')
+                ];
+                csvContent += row.join(",") + "\n";
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "members_export.csv";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        loadMembers();
+    </script>
+</body>
+</html>
