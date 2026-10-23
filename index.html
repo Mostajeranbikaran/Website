@@ -3,56 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ثبت‌نام | مرکز توانمندسازی مستاجران و بیکاران</title>
-    <meta name="description" content="عضویت رایگان در مرکز توانمندسازی مستاجران و بیکاران. حمایت از مستاجران، اشتغال‌زایی و مشاوره شغلی.">
+    <title>مرکز توانمندسازی مستاجران و بیکاران | عضویت رایگان</title>
+    <meta name="description" content="عضویت رایگان در مرکز توانمندسازی مستاجران و بیکاران. تعاونی مسکن، بیمه تکمیلی، مشاوره حقوقی و شغلی.">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        /* ====== استایل انیمیشن ورودی (Splash Screen) ====== */
+        /* استایل انیمیشن ورودی */
         #splash-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #ffffff; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 9999;
             transition: opacity 0.5s ease, visibility 0.5s ease;
         }
-        
-        #splash-screen.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-
-        .splash-logo {
-            width: 150px;
-            height: auto;
-            margin-bottom: 20px;
-            animation: zoomIn 1s ease-out forwards;
-        }
-
-        .splash-title {
-            color: #1e3a8a; /* سرمه‌ای */
-            font-size: 24px;
-            font-weight: 900;
-            opacity: 0;
-            animation: fadeInUp 1s ease-out 0.5s forwards;
-            text-align: center;
-        }
-
-        /* انیمیشن‌ها */
-        @keyframes zoomIn {
-            0% { transform: scale(0.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        @keyframes fadeInUp {
-            0% { transform: translateY(20px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
+        #splash-screen.hidden { opacity: 0; visibility: hidden; }
+        .splash-logo { width: 150px; margin-bottom: 20px; animation: zoomIn 1s ease-out forwards; }
+        .splash-title { color: #1e3a8a; font-size: 24px; font-weight: 900; opacity: 0; animation: fadeInUp 1s ease-out 0.5s forwards; text-align: center; }
+        @keyframes zoomIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes fadeInUp { 0% { transform: translateY(20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
@@ -63,125 +30,194 @@
         <div class="splash-title">مرکز توانمندسازی مستاجران و بیکاران</div>
     </div>
 
-    <div class="container">
-        <div class="card">
-            
-            <div class="form-header">
-                <img src="logo.png" alt="لوگوی مرکز توانمندسازی">
-                <div style="text-align: left;">
-                    <h2>مرکز توانمندسازی مستاجران و بیکاران</h2>
-                    <p>شماره مجوز: 1000534408</p>
-                    <p>تلفن تماس: ۰۹۱۴۴۱۲۳۵۰۴</p>
-                </div>
-            </div>
-
-            <div class="print-date" id="print-date"></div>
-
-            <div class="btn-group no-print" style="margin-bottom: 30px;">
-                <button onclick="window.print()" class="btn btn-secondary"><i class="fas fa-print"></i> چاپ / ذخیره PDF</button>
-                <a href="admin.html" class="btn btn-primary"><i class="fas fa-user-shield"></i> پنل مدیریت</a>
-            </div>
-
-            <form id="membership-form">
-                <div class="form-section">
-                    <h3 class="form-section-title"><i class="fas fa-users"></i> نوع عضویت</h3>
-                    <div class="form-group">
-                        <label>نوع همکاری خود را انتخاب کنید:</label>
-                        <select name="membership_type" required>
-                            <option value="">انتخاب کنید...</option>
-                            <option value="حامی مالی">حامی مالی</option>
-                            <option value="حامی غیر مالی">حامی غیر مالی</option>
-                            <option value="داوطلب همکاری">داوطلب همکاری</option>
-                            <option value="مستاجر">مستاجر</option>
-                            <option value="بیکار">بیکار</option>
-                            <option value="مستاجر و بیکار">مستاجر و بیکار</option>
-                            <option value="مشاور کارآفرینی و کاریابی">مشاور کارآفرینی و کاریابی</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h3 class="form-section-title"><i class="fas fa-user"></i> اطلاعات هویتی</h3>
-                    <div class="form-row">
-                        <div class="form-group"><label>نام</label><input type="text" name="first_name" required></div>
-                        <div class="form-group"><label>نام خانوادگی</label><input type="text" name="last_name" required></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label>کد ملی</label><input type="text" name="national_id" required></div>
-                        <div class="form-group"><label>تاریخ تولد</label><input type="text" name="birth_date" placeholder="1370/01/01"></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label>وضعیت تاهل</label>
-                            <select name="marital_status"><option value="">انتخاب...</option><option value="متاهل">متاهل</option><option value="مجرد">مجرد</option></select>
-                        </div>
-                        <div class="form-group"><label>تعداد و سن فرزندان</label><input type="text" name="children" placeholder="2 فرزند (5 و 8 ساله)"></div>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h3 class="form-section-title"><i class="fas fa-home"></i> اطلاعات تماس و سکونت</h3>
-                    <div class="form-group"><label>نشانی کامل</label><textarea name="address" rows="2" required></textarea></div>
-                    <div class="form-row">
-                        <div class="form-group"><label>کد پستی</label><input type="text" name="postal_code"></div>
-                        <div class="form-group"><label>شماره همراه</label><input type="tel" name="mobile" required></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label>تلفن ثابت</label><input type="tel" name="landline"></div>
-                        <div class="form-group"><label>وضعیت مسکن</label>
-                            <select name="housing_status"><option value="">انتخاب...</option><option value="ملکی">ملکی</option><option value="پدری">پدری</option><option value="ورثه ای">ورثه ای</option><option value="اوقافی">اوقافی</option><option value="استیجاری">استیجاری</option></select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h3 class="form-section-title"><i class="fas fa-briefcase"></i> اطلاعات شغلی و تحصیلی</h3>
-                    <div class="form-row">
-                        <div class="form-group"><label>شغل (دقیق)</label><input type="text" name="job"></div>
-                        <div class="form-group"><label>تحصیلات</label><input type="text" name="education"></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label>کد بیمه تامین اجتماعی</label><input type="text" name="social_security"></div>
-                        <div class="form-group"><label>بیمه تکمیلی دارید؟</label>
-                            <select name="supplementary_insurance"><option value="">انتخاب...</option><option value="بله">بله</option><option value="خیر">خیر</option></select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-section no-print">
-                    <h3 class="form-section-title"><i class="fas fa-camera"></i> بارگذاری عکس</h3>
-                    <div class="form-group">
-                        <label>عکس خود را انتخاب کنید (JPG / PNG)</label>
-                        <input type="file" name="attachment" accept="image/*">
-                    </div>
-                </div>
-
-                <div class="btn-group no-print">
-                    <button type="submit" id="submit-btn" class="btn btn-primary" style="width: 100%;">ارسال فرم و ثبت‌نام</button>
-                </div>
-                <p id="form-msg" style="text-align: center; margin-top: 15px; font-weight: bold; color: var(--primary);"></p>
-            </form>
+    <!-- هدر -->
+    <header class="main-header">
+        <div class="container header-content">
+            <a href="#" class="header-logo">
+                <img src="logo.png" alt="لوگو">
+                <span>مرکز توانمندسازی</span>
+            </a>
+            <nav class="main-nav">
+                <a href="#features">مزایای عضویت</a>
+                <a href="#register">ثبت‌نام</a>
+                <a href="admin.html"><i class="fas fa-user-shield"></i> پنل مدیریت</a>
+            </nav>
         </div>
-    </div>
+    </header>
+
+    <!-- بخش Hero -->
+    <section class="hero">
+        <div class="container">
+            <h1>با ما به سمت <span>توانمندی و آینده‌ای بهتر</span></h1>
+            <p>مرکز توانمندسازی مستاجران و بیکاران، با ارائه خدمات رایگان و مشاوره‌های تخصصی، در کنار شماست تا مسیر موفقیت را هموارتر طی کنید.</p>
+            <a href="#register" class="btn-hero">عضویت رایگان</a>
+        </div>
+    </section>
+
+    <!-- بخش مزایای عضویت -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <h2 class="section-title">مزایای <span>عضویت</span> در مرکز</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-home"></i></div>
+                    <h3>تعاونی مسکن و مصرف</h3>
+                    <p>امکان بهره‌مندی از خدمات تعاونی برای تأمین مسکن و مایحتاج زندگی.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                    <h3>بیمه تکمیلی و تخفیف کارت</h3>
+                    <p>دریافت بیمه تکمیلی و کارت‌های تخفیف برای خریدهای روزمره.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-file-alt"></i></div>
+                    <h3>ارتقای رزومه و مدارک مهارتی</h3>
+                    <p>دوره‌های آموزشی و مدارک مهارتی برای افزایش شانس استخدام.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-gavel"></i></div>
+                    <h3>مشاوره حقوقی و شغلی</h3>
+                    <p>مشاوره رایگان با متخصصان حقوقی و شغلی برای حل مشکلات.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- بخش فرم ثبت‌نام -->
+    <section id="register" class="form-section-wrapper">
+        <div class="container">
+            <div class="card">
+                <div class="form-header">
+                    <img src="logo.png" alt="لوگو">
+                    <div style="text-align: left;">
+                        <h2>مرکز توانمندسازی مستاجران و بیکاران</h2>
+                        <p>شماره مجوز: 1000534408 | تلفن: ۰۹۱۴۴۱۲۳۵۰۴</p>
+                    </div>
+                </div>
+
+                <div class="print-date" id="print-date"></div>
+
+                <div class="btn-group no-print" style="margin-bottom: 30px;">
+                    <button onclick="window.print()" class="btn btn-secondary"><i class="fas fa-print"></i> چاپ / ذخیره PDF</button>
+                </div>
+
+                <form id="membership-form">
+                    <!-- نوع عضویت -->
+                    <div class="form-section">
+                        <h3 class="form-section-title"><i class="fas fa-users"></i> نوع عضویت</h3>
+                        <div class="form-group">
+                            <label>نوع همکاری خود را انتخاب کنید:</label>
+                            <select name="membership_type" required>
+                                <option value="">انتخاب کنید...</option>
+                                <option value="حامی مالی">حامی مالی</option>
+                                <option value="حامی غیر مالی">حامی غیر مالی</option>
+                                <option value="داوطلب همکاری">داوطلب همکاری</option>
+                                <option value="مستاجر">مستاجر</option>
+                                <option value="بیکار">بیکار</option>
+                                <option value="مستاجر و بیکار">مستاجر و بیکار</option>
+                                <option value="مشاور کارآفرینی و کاریابی">مشاور کارآفرینی و کاریابی</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- اطلاعات هویتی -->
+                    <div class="form-section">
+                        <h3 class="form-section-title"><i class="fas fa-user"></i> اطلاعات هویتی</h3>
+                        <div class="form-row">
+                            <div class="form-group"><label>نام</label><input type="text" name="first_name" required></div>
+                            <div class="form-group"><label>نام خانوادگی</label><input type="text" name="last_name" required></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>کد ملی</label><input type="text" name="national_id" required></div>
+                            <div class="form-group"><label>تاریخ تولد</label><input type="text" name="birth_date" placeholder="1370/01/01"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>وضعیت تاهل</label>
+                                <select name="marital_status"><option value="">انتخاب...</option><option value="متاهل">متاهل</option><option value="مجرد">مجرد</option></select>
+                            </div>
+                            <div class="form-group"><label>تعداد و سن فرزندان</label><input type="text" name="children" placeholder="2 فرزند (5 و 8 ساله)"></div>
+                        </div>
+                    </div>
+
+                    <!-- اطلاعات تماس -->
+                    <div class="form-section">
+                        <h3 class="form-section-title"><i class="fas fa-home"></i> اطلاعات تماس و سکونت</h3>
+                        <div class="form-group"><label>نشانی کامل</label><textarea name="address" rows="2" required></textarea></div>
+                        <div class="form-row">
+                            <div class="form-group"><label>کد پستی</label><input type="text" name="postal_code"></div>
+                            <div class="form-group"><label>شماره همراه</label><input type="tel" name="mobile" required></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>تلفن ثابت</label><input type="tel" name="landline"></div>
+                            <div class="form-group"><label>وضعیت مسکن</label>
+                                <select name="housing_status"><option value="">انتخاب...</option><option value="ملکی">ملکی</option><option value="پدری">پدری</option><option value="ورثه ای">ورثه ای</option><option value="اوقافی">اوقافی</option><option value="استیجاری">استیجاری</option></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- اطلاعات شغلی -->
+                    <div class="form-section">
+                        <h3 class="form-section-title"><i class="fas fa-briefcase"></i> اطلاعات شغلی و تحصیلی</h3>
+                        <div class="form-row">
+                            <div class="form-group"><label>شغل (دقیق)</label><input type="text" name="job"></div>
+                            <div class="form-group"><label>تحصیلات</label><input type="text" name="education"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>کد بیمه تامین اجتماعی</label><input type="text" name="social_security"></div>
+                            <div class="form-group"><label>بیمه تکمیلی دارید؟</label>
+                                <select name="supplementary_insurance"><option value="">انتخاب...</option><option value="بله">بله</option><option value="خیر">خیر</option></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- آپلود عکس -->
+                    <div class="form-section no-print">
+                        <h3 class="form-section-title"><i class="fas fa-camera"></i> بارگذاری عکس</h3>
+                        <div class="form-group">
+                            <label>عکس خود را انتخاب کنید (JPG / PNG)</label>
+                            <input type="file" name="attachment" accept="image/*">
+                        </div>
+                    </div>
+
+                    <!-- دکمه ارسال -->
+                    <div class="btn-group no-print">
+                        <button type="submit" id="submit-btn" class="btn btn-primary" style="width: 100%;">ارسال فرم و ثبت‌نام</button>
+                    </div>
+                    <p id="form-msg" style="text-align: center; margin-top: 15px; font-weight: bold; color: var(--primary);"></p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- فوتر -->
+    <footer>
+        <div class="container">
+            <h3>مرکز توانمندسازی مستاجران و بیکاران</h3>
+            <p>شماره مجوز: 1000534408 | تلفن: ۰۹۱۴۴۱۲۳۵۰۴</p>
+            <div class="social-links">
+                <a href="https://eitaa.com/mostajeran_bikaran" target="_blank" title="ایتا"><i class="fas fa-paper-plane"></i></a>
+                <a href="https://rubika.ir/mostajeran_bikaran" target="_blank" title="روبیکا"><i class="fas fa-comment-dots"></i></a>
+                <a href="#" target="_blank" title="اینستاگرام"><i class="fab fa-instagram"></i></a>
+            </div>
+            <div class="footer-bottom">© 2024 مرکز توانمندسازی - تمامی حقوق محفوظ است.</div>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // ⚠️ کلیدهای پروژه خودت
         const SUPABASE_URL = 'https://almalzhslughrfqsthi.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NjgxMDcsImV4cCI6MjEwODM0NDEwN30.IDFFy8WZ8r3hxlOCAwFbsOFkXuwHvvs3Sw8UeIGrc1k';
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ====== کد انیمیشن ورودی ======
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('splash-screen').classList.add('hidden');
-            }, 2000); // ۲۰۰۰ میلی‌ثانیه = ۲ ثانیه
+            }, 2000);
         });
 
-        // نمایش تاریخ
         document.getElementById('print-date').innerText = "تاریخ ثبت: " + new Date().toLocaleDateString('fa-IR');
 
-        // ارسال فرم
         document.getElementById('membership-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
