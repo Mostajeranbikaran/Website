@@ -7,8 +7,61 @@
     <meta name="description" content="عضویت رایگان در مرکز توانمندسازی مستاجران و بیکاران. حمایت از مستاجران، اشتغال‌زایی و مشاوره شغلی.">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ====== استایل انیمیشن ورودی (Splash Screen) ====== */
+        #splash-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        #splash-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .splash-logo {
+            width: 150px;
+            height: auto;
+            margin-bottom: 20px;
+            animation: zoomIn 1s ease-out forwards;
+        }
+
+        .splash-title {
+            color: #1e3a8a; /* سرمه‌ای */
+            font-size: 24px;
+            font-weight: 900;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.5s forwards;
+            text-align: center;
+        }
+
+        /* انیمیشن‌ها */
+        @keyframes zoomIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            0% { transform: translateY(20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+    </style>
 </head>
 <body>
+
+    <!-- انیمیشن ورودی -->
+    <div id="splash-screen">
+        <img src="logo.png" alt="لوگو" class="splash-logo">
+        <div class="splash-title">مرکز توانمندسازی مستاجران و بیکاران</div>
+    </div>
 
     <div class="container">
         <div class="card">
@@ -112,13 +165,23 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // ⚠️ کلیدهای پروژه خودت
         const SUPABASE_URL = 'https://almalzhslughrfqsthi.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NjgxMDcsImV4cCI6MjEwODM0NDEwN30.IDFFy8WZ8r3hxlOCAwFbsOFkXuwHvvs3Sw8UeIGrc1k';
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // ====== کد انیمیشن ورودی ======
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('splash-screen').classList.add('hidden');
+            }, 2000); // ۲۰۰۰ میلی‌ثانیه = ۲ ثانیه
+        });
+
+        // نمایش تاریخ
         document.getElementById('print-date').innerText = "تاریخ ثبت: " + new Date().toLocaleDateString('fa-IR');
 
+        // ارسال فرم
         document.getElementById('membership-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
