@@ -10,63 +10,49 @@
     
     <style>
         /* ====== استایل انیمیشن با CSS خالص ====== */
-        body {
-            /* انیمیشن Fade In برای کل صفحه */
-            animation: fadeInPage 0.8s ease-in-out forwards;
-            opacity: 0; /* در ابتدا مخفی */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #ffffff; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 9999;
+            /* انیمیشن محو شدن بعد از 2 ثانیه */
+            animation: fadeOutSplash 0.5s ease 2s forwards;
         }
-
-        @keyframes fadeInPage {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        /* استایل انیمیشن لوگو در بالای صفحه */
-        .logo-animation-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 0;
-            background: #fff;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .logo-animation-container img {
-            width: 120px;
+        
+        .splash-logo { 
+            width: 130px; 
             height: auto;
-            animation: zoomInLogo 1s ease-out forwards;
+            margin-bottom: 20px; 
+            animation: zoomIn 1s ease-out forwards; 
         }
-
-        .logo-animation-container h1 {
-            color: #1e3a8a;
-            font-size: 22px;
-            font-weight: 900;
-            margin-top: 15px;
-            animation: slideUpText 1s ease-out 0.3s forwards;
-            opacity: 0;
+        .splash-title { 
+            color: #1e3a8a; 
+            font-size: 22px; 
+            font-weight: 900; 
+            opacity: 0; 
+            animation: fadeInUp 1s ease-out 0.5s forwards; 
+            text-align: center; 
+            padding: 0 20px;
         }
-
-        @keyframes zoomInLogo {
-            0% { transform: scale(0.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        @keyframes slideUpText {
-            0% { transform: translateY(20px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
+        
+        @keyframes zoomIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes fadeInUp { 0% { transform: translateY(20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+        
+        /* کی‌فریم محو شدن نهایی */
+        @keyframes fadeOutSplash {
+            0% { opacity: 1; visibility: visible; }
+            100% { opacity: 0; visibility: hidden; display: none; }
         }
     </style>
 </head>
 <body>
 
-    <!-- انیمیشن ورودی (به عنوان یک هدر بالای سایت) -->
-    <div class="logo-animation-container" id="splash-screen">
-        <img src="logo.png" alt="لوگو">
-        <h1>مرکز توانمندسازی مستاجران و بیکاران</h1>
+    <!-- انیمیشن ورودی -->
+    <div id="splash-screen">
+        <img src="logo.png" alt="لوگو" class="splash-logo">
+        <div class="splash-title">مرکز توانمندسازی مستاجران و بیکاران</div>
     </div>
 
-    <!-- هدر اصلی -->
+    <!-- هدر -->
     <header class="main-header">
         <div class="container header-content">
             <a href="#" class="header-logo">
@@ -241,13 +227,20 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // کلیدهای پروژه
         const SUPABASE_URL = 'https://almalzhslughrfqsthi.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NjgxMDcsImV4cCI6MjEwODM0NDEwN30.IDFFy8WZ8r3hxlOCAwFbsOFkXuwHvvs3Sw8UeIGrc1k';
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // (انیمیشن حذف شد، دیگه نیازی به این کد نیست)
+        // حذف قطعی صفحه سفید بعد از ۲ ثانیه
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                if (splash) {
+                    splash.style.display = 'none'; // مخفی کردن کامل
+                }
+            }, 2000);
+        });
 
         document.getElementById('print-date').innerText = "تاریخ ثبت: " + new Date().toLocaleDateString('fa-IR');
 
