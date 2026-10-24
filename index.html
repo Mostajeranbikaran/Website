@@ -9,39 +9,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* ====== استایل انیمیشن با CSS خالص ====== */
+        /* استایل انیمیشن ورودی */
         #splash-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: #ffffff; display: flex; flex-direction: column;
             justify-content: center; align-items: center; z-index: 9999;
-            /* انیمیشن محو شدن بعد از 2 ثانیه */
             animation: fadeOutSplash 0.5s ease 2s forwards;
         }
-        
-        .splash-logo { 
-            width: 130px; 
-            height: auto;
-            margin-bottom: 20px; 
-            animation: zoomIn 1s ease-out forwards; 
-        }
-        .splash-title { 
-            color: #1e3a8a; 
-            font-size: 22px; 
-            font-weight: 900; 
-            opacity: 0; 
-            animation: fadeInUp 1s ease-out 0.5s forwards; 
-            text-align: center; 
-            padding: 0 20px;
-        }
-        
+        .splash-logo { width: 130px; margin-bottom: 20px; animation: zoomIn 1s ease-out forwards; }
+        .splash-title { color: #1e3a8a; font-size: 22px; font-weight: 900; opacity: 0; animation: fadeInUp 1s ease-out 0.5s forwards; text-align: center; padding: 0 20px; }
         @keyframes zoomIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes fadeInUp { 0% { transform: translateY(20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
-        
-        /* کی‌فریم محو شدن نهایی */
-        @keyframes fadeOutSplash {
-            0% { opacity: 1; visibility: visible; }
-            100% { opacity: 0; visibility: hidden; display: none; }
-        }
+        @keyframes fadeOutSplash { 0% { opacity: 1; visibility: visible; } 100% { opacity: 0; visibility: hidden; display: none; } }
     </style>
 </head>
 <body>
@@ -60,9 +39,9 @@
                 <span>مرکز توانمندسازی</span>
             </a>
             <nav class="main-nav">
+                <a href="#news">اخبار</a>
                 <a href="#features">مزایای عضویت</a>
                 <a href="#register">ثبت‌نام</a>
-                <a href="admin.html"><i class="fas fa-user-shield"></i> پنل مدیریت</a>
             </nav>
         </div>
     </header>
@@ -73,6 +52,25 @@
             <h1>با ما به سمت <span>توانمندی و آینده‌ای بهتر</span></h1>
             <p>مرکز توانمندسازی مستاجران و بیکاران، با ارائه خدمات رایگان و مشاوره‌های تخصصی، در کنار شماست تا مسیر موفقیت را هموارتر طی کنید.</p>
             <a href="#register" class="btn-hero">عضویت رایگان</a>
+        </div>
+    </section>
+
+    <!-- بخش آمار (تاثیر ما) -->
+    <section class="stats-section">
+        <div class="container stats-grid">
+            <div class="stat-item"><h3>+۱۰۰</h3><p>مشتری راضی</p></div>
+            <div class="stat-item"><h3>+۱۵۰</h3><p>پروژه موفق</p></div>
+            <div class="stat-item"><h3>۲۴/۷</h3><p>پشتیبانی</p></div>
+        </div>
+    </section>
+
+    <!-- بخش اخبار (متصل به دیتابیس) -->
+    <section id="news" class="news-section">
+        <div class="container">
+            <h2 class="section-title">آخرین <span>اخبار</span> و اطلاعیه‌ها</h2>
+            <div class="news-grid" id="news-container">
+                <p style="text-align: center; width: 100%; color: #64748b;">در حال بارگذاری اخبار...</p>
+            </div>
         </div>
     </section>
 
@@ -124,7 +122,6 @@
                 </div>
 
                 <form id="membership-form">
-                    <!-- نوع عضویت -->
                     <div class="form-section">
                         <h3 class="form-section-title"><i class="fas fa-users"></i> نوع عضویت</h3>
                         <div class="form-group">
@@ -142,7 +139,6 @@
                         </div>
                     </div>
 
-                    <!-- اطلاعات هویتی -->
                     <div class="form-section">
                         <h3 class="form-section-title"><i class="fas fa-user"></i> اطلاعات هویتی</h3>
                         <div class="form-row">
@@ -161,7 +157,6 @@
                         </div>
                     </div>
 
-                    <!-- اطلاعات تماس -->
                     <div class="form-section">
                         <h3 class="form-section-title"><i class="fas fa-home"></i> اطلاعات تماس و سکونت</h3>
                         <div class="form-group"><label>نشانی کامل</label><textarea name="address" rows="2" required></textarea></div>
@@ -177,7 +172,6 @@
                         </div>
                     </div>
 
-                    <!-- اطلاعات شغلی -->
                     <div class="form-section">
                         <h3 class="form-section-title"><i class="fas fa-briefcase"></i> اطلاعات شغلی و تحصیلی</h3>
                         <div class="form-row">
@@ -192,7 +186,6 @@
                         </div>
                     </div>
 
-                    <!-- آپلود عکس -->
                     <div class="form-section no-print">
                         <h3 class="form-section-title"><i class="fas fa-camera"></i> بارگذاری عکس</h3>
                         <div class="form-group">
@@ -201,7 +194,6 @@
                         </div>
                     </div>
 
-                    <!-- دکمه ارسال -->
                     <div class="btn-group no-print">
                         <button type="submit" id="submit-btn" class="btn btn-primary" style="width: 100%;">ارسال فرم و ثبت‌نام</button>
                     </div>
@@ -219,7 +211,6 @@
             <div class="social-links">
                 <a href="https://eitaa.com/mostajeran_bikaran" target="_blank" title="ایتا"><i class="fas fa-paper-plane"></i></a>
                 <a href="https://rubika.ir/mostajeran_bikaran" target="_blank" title="روبیکا"><i class="fas fa-comment-dots"></i></a>
-                <a href="#" target="_blank" title="اینستاگرام"><i class="fab fa-instagram"></i></a>
             </div>
             <div class="footer-bottom">© 2024 مرکز توانمندسازی - تمامی حقوق محفوظ است.</div>
         </div>
@@ -228,22 +219,43 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const SUPABASE_URL = 'https://almalzhslughrfqsthi.supabase.co'; 
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NjgxMDcsImV4cCI6MjEwODM0NDEwN30.IDFFy8WZ8r3hxlOCAwFbsOFkXuwHvvs3Sw8UeIGrc1k';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NjgxMDcsImV4cCI6MjEwODM0NDEwN30.IDFFy8WZ8r3hxlOCAwFbsOFkXuwHvvs3Sw8UeIGrc1k';
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // حذف قطعی صفحه سفید بعد از ۲ ثانیه
+        // حذف انیمیشن بعد از ۲ ثانیه
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
-                if (splash) {
-                    splash.style.display = 'none'; // مخفی کردن کامل
-                }
+                if (splash) splash.style.display = 'none';
             }, 2000);
         });
 
         document.getElementById('print-date').innerText = "تاریخ ثبت: " + new Date().toLocaleDateString('fa-IR');
 
+        // بارگذاری اخبار
+        async function loadNews() {
+            const container = document.getElementById('news-container');
+            const { data, error } = await supabase.from('news').select('*').order('created_at', { ascending: false }).limit(3);
+            
+            if (error || data.length === 0) {
+                container.innerHTML = '<p style="text-align: center; width: 100%; color: #64748b;">هنوز خبری ثبت نشده است.</p>';
+                return;
+            }
+            container.innerHTML = '';
+            data.forEach(item => {
+                const date = new Date(item.created_at).toLocaleDateString('fa-IR');
+                container.innerHTML += `
+                    <div class="news-card">
+                        <div class="news-date"><i class="far fa-calendar-alt"></i> ${date}</div>
+                        <h3>${item.title}</h3>
+                        <p>${item.content}</p>
+                    </div>`;
+            });
+        }
+        loadNews();
+
+        // ارسال فرم ثبت‌نام
         document.getElementById('membership-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
