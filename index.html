@@ -4,25 +4,113 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مرکز توانمندسازی مستاجران و بیکاران | عضویت رایگان</title>
+    <meta name="description" content="عضویت رایگان در مرکز توانمندسازی مستاجران و بیکاران. تعاونی مسکن، بیمه تکمیلی، مشاوره حقوقی و شغلی.">
+    
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+
+    <meta property="og:title" content="مرکز توانمندسازی مستاجران و بیکاران">
+    <meta property="og:description" content="عضویت رایگان، تعاونی مسکن، بیمه تکمیلی و مشاوره شغلی.">
+    <meta property="og:image" content="https://mostajeranbikaran.github.io/Website/logo.png">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mostajeranbikaran.github.io/Website/">
+
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffffff; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; animation: fadeOutSplash 0.5s ease 2s forwards; }
+        /* استایل انیمیشن ورودی */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #ffffff; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 9999;
+            animation: fadeOutSplash 0.5s ease 2s forwards;
+        }
         .splash-logo { width: 130px; margin-bottom: 20px; animation: zoomIn 1s ease-out forwards; }
         .splash-title { color: #1e3a8a; font-size: 22px; font-weight: 900; opacity: 0; animation: fadeInUp 1s ease-out 0.5s forwards; text-align: center; padding: 0 20px; }
         @keyframes zoomIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes fadeInUp { 0% { transform: translateY(20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
         @keyframes fadeOutSplash { 0% { opacity: 1; visibility: visible; } 100% { opacity: 0; visibility: hidden; display: none; } }
+
+        /* ===== استایل شیشه‌ای و انیمیشن برای کارت‌های خبر ===== */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 10px;
+        }
+
+        .news-card {
+            background: rgba(255, 255, 255, 0.4); /* پس‌زمینه نیمه‌شفاف */
+            backdrop-filter: blur(12px); /* افکت شیشه‌ای */
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6); /* لبه شیشه‌ای */
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07); /* سایه نرم */
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            
+            /* انیمیشن ورود نرم (به جای ظاهر شدن یهو) */
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUpFade 0.8s ease forwards;
+        }
+
+        /* تاخیر برای هر کارت تا پشت سر هم بیان */
+        .news-card:nth-child(1) { animation-delay: 0.1s; }
+        .news-card:nth-child(2) { animation-delay: 0.3s; }
+        .news-card:nth-child(3) { animation-delay: 0.5s; }
+
+        .news-card:hover {
+            transform: translateY(-8px) scale(1.02); /* افکت شناور شدن موقع هاور */
+            box-shadow: 0 15px 40px 0 rgba(31, 38, 135, 0.15);
+            background: rgba(255, 255, 255, 0.6);
+            border-color: rgba(30, 58, 138, 0.3);
+        }
+
+        .news-date {
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .news-card h3 {
+            color: #1e3a8a;
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .news-card p {
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        /* انیمیشن ورود کارت‌ها */
+        @keyframes slideUpFade {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 <body>
 
+    <!-- انیمیشن ورودی -->
     <div id="splash-screen">
         <img src="logo.png" alt="لوگو" class="splash-logo">
         <div class="splash-title">مرکز توانمندسازی مستاجران و بیکاران</div>
     </div>
 
+    <!-- هدر -->
     <header class="main-header">
         <div class="container header-content">
             <a href="#" class="header-logo">
@@ -37,6 +125,7 @@
         </div>
     </header>
 
+    <!-- بخش Hero -->
     <section class="hero">
         <div class="container">
             <h1>با ما به سمت <span>توانمندی و آینده‌ای بهتر</span></h1>
@@ -45,6 +134,7 @@
         </div>
     </section>
 
+    <!-- بخش اخبار (متصل به دیتابیس) -->
     <section id="news" class="news-section">
         <div class="container">
             <h2 class="section-title">آخرین <span>اخبار</span> و اطلاعیه‌ها</h2>
@@ -54,18 +144,36 @@
         </div>
     </section>
 
+    <!-- بخش مزایای عضویت -->
     <section id="features" class="features-section">
         <div class="container">
             <h2 class="section-title">مزایای <span>عضویت</span> در مرکز</h2>
             <div class="features-grid">
-                <div class="feature-card"><div class="feature-icon"><i class="fas fa-home"></i></div><h3>تعاونی مسکن و مصرف</h3><p>امکان بهره‌مندی از خدمات تعاونی برای تأمین مسکن و مایحتاج زندگی.</p></div>
-                <div class="feature-card"><div class="feature-icon"><i class="fas fa-shield-alt"></i></div><h3>بیمه تکمیلی و تخفیف کارت</h3><p>دریافت بیمه تکمیلی و کارت‌های تخفیف برای خریدهای روزمره.</p></div>
-                <div class="feature-card"><div class="feature-icon"><i class="fas fa-file-alt"></i></div><h3>ارتقای رزومه و مدارک مهارتی</h3><p>دوره‌های آموزشی و مدارک مهارتی برای افزایش شانس استخدام.</p></div>
-                <div class="feature-card"><div class="feature-icon"><i class="fas fa-gavel"></i></div><h3>مشاوره حقوقی و شغلی</h3><p>مشاوره رایگان با متخصصان حقوقی و شغلی برای حل مشکلات.</p></div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-home"></i></div>
+                    <h3>تعاونی مسکن و مصرف</h3>
+                    <p>امکان بهره‌مندی از خدمات تعاونی برای تأمین مسکن و مایحتاج زندگی.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                    <h3>بیمه تکمیلی و تخفیف کارت</h3>
+                    <p>دریافت بیمه تکمیلی و کارت‌های تخفیف برای خریدهای روزمره.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-file-alt"></i></div>
+                    <h3>ارتقای رزومه و مدارک مهارتی</h3>
+                    <p>دوره‌های آموزشی و مدارک مهارتی برای افزایش شانس استخدام.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-gavel"></i></div>
+                    <h3>مشاوره حقوقی و شغلی</h3>
+                    <p>مشاوره رایگان با متخصصان حقوقی و شغلی برای حل مشکلات.</p>
+                </div>
             </div>
         </div>
     </section>
 
+    <!-- بخش فرم ثبت‌نام -->
     <section id="register" class="form-section-wrapper">
         <div class="container">
             <div class="card">
@@ -76,10 +184,13 @@
                         <p>شماره مجوز: 1000534408 | تلفن: ۰۹۱۴۴۱۲۳۵۰۴</p>
                     </div>
                 </div>
+
                 <div class="print-date" id="print-date"></div>
+
                 <div class="btn-group no-print" style="margin-bottom: 30px;">
                     <button onclick="window.print()" class="btn btn-secondary"><i class="fas fa-print"></i> چاپ / ذخیره PDF</button>
                 </div>
+
                 <form id="membership-form">
                     <div class="form-section">
                         <h3 class="form-section-title"><i class="fas fa-users"></i> نوع عضویت</h3>
@@ -97,6 +208,7 @@
                             </select>
                         </div>
                     </div>
+
                     <div class="form-section">
                         <h3 class="form-section-title"><i class="fas fa-user"></i> اطلاعات هویتی</h3>
                         <div class="form-row">
@@ -114,6 +226,7 @@
                             <div class="form-group"><label>تعداد و سن فرزندان</label><input type="text" name="children" placeholder="2 فرزند (5 و 8 ساله)"></div>
                         </div>
                     </div>
+
                     <div class="form-section">
                         <h3 class="form-section-title"><i class="fas fa-home"></i> اطلاعات تماس و سکونت</h3>
                         <div class="form-group"><label>نشانی کامل</label><textarea name="address" rows="2" required></textarea></div>
@@ -128,6 +241,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="form-section">
                         <h3 class="form-section-title"><i class="fas fa-briefcase"></i> اطلاعات شغلی و تحصیلی</h3>
                         <div class="form-row">
@@ -141,6 +255,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="form-section no-print">
                         <h3 class="form-section-title"><i class="fas fa-camera"></i> بارگذاری عکس</h3>
                         <div class="form-group">
@@ -148,6 +263,7 @@
                             <input type="file" name="attachment" accept="image/*">
                         </div>
                     </div>
+
                     <div class="btn-group no-print">
                         <button type="submit" id="submit-btn" class="btn btn-primary" style="width: 100%;">ارسال فرم و ثبت‌نام</button>
                     </div>
@@ -157,6 +273,7 @@
         </div>
     </section>
 
+    <!-- فوتر -->
     <footer>
         <div class="container">
             <h3>مرکز توانمندسازی مستاجران و بیکاران</h3>
@@ -169,8 +286,10 @@
         </div>
     </footer>
 
+    <!-- اسکریپت‌های سوپابیس و فرم -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // 🔴 آدرس و کلید جدید
         const SUPABASE_URL = 'https://almalzhslughrfqsthio.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_nbbnzYT0aPekZkxCaEn_Lw_OgDMBUXg';
 
@@ -207,13 +326,11 @@
                             : item.content;
 
                         container.innerHTML += `
-                            <div class="news-card" style="display: flex; flex-direction: column; justify-content: space-between;">
-                                <div>
-                                    <div class="news-date"><i class="far fa-calendar-alt"></i> ${date}</div>
-                                    <h3>${item.title}</h3>
-                                    <p style="word-break: break-word;">${shortContent}</p>
-                                </div>
-                                <a href="news.html?id=${item.id}" style="display: inline-block; margin-top: 15px; color: #ea580c; font-weight: bold; text-decoration: none; border: 1px solid #ea580c; padding: 8px 15px; border-radius: 8px; text-align: center;">
+                            <div class="news-card">
+                                <div class="news-date"><i class="far fa-calendar-alt"></i> ${date}</div>
+                                <h3>${item.title}</h3>
+                                <p>${shortContent}</p>
+                                <a href="news.html?id=${item.id}" style="display: inline-block; color: #ea580c; font-weight: 800; text-decoration: none; border: 2px solid #ea580c; padding: 8px 18px; border-radius: 10px; text-align: center; transition: 0.3s;" onmouseover="this.style.background='#ea580c'; this.style.color='#fff'" onmouseout="this.style.background='transparent'; this.style.color='#ea580c'">
                                     مطالعه بیشتر <i class="fas fa-arrow-left" style="font-size: 12px;"></i>
                                 </a>
                             </div>
