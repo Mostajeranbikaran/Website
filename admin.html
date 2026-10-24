@@ -58,6 +58,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+// 🔴 آدرس اصلاح شده (حرف o اضافه حذف شد)
 const SUPABASE_URL = 'https://almalzhslughrfqsthi.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NjgxMDcsImV4cCI6MjEwODM0NDEwN30.IDFFy8WZ8r3hxlOCAwFbsOFkXuwHvvs3Sw8UeIGrc1k';
 
@@ -101,7 +102,6 @@ form.addEventListener('submit', async (e) => {
         const { data, error } = await sb.auth.signInWithPassword({ email, password });
 
         if (error) {
-            // نمایش متن دقیق خطا برای دیباگ
             console.error('Supabase Auth Error:', error);
             const m = (error.message || '').toLowerCase();
             if (m.includes('invalid') || m.includes('credentials')) {
@@ -109,9 +109,9 @@ form.addEventListener('submit', async (e) => {
             } else if (m.includes('email not confirmed')) {
                 showMsg('ایمیل شما تأیید نشده است. لطفاً ایمیل خود را بررسی کنید.', 'error');
             } else if (m.includes('network') || m.includes('fetch')) {
-                showMsg('خطای شبکه: ' + error.message, 'error'); // متن دقیق
+                showMsg('خطای شبکه: ' + error.message, 'error');
             } else {
-                showMsg('خطا: ' + error.message, 'error'); // متن دقیق
+                showMsg('خطا: ' + error.message, 'error');
             }
             setLoading(false);
             return;
