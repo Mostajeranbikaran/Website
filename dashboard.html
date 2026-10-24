@@ -3,94 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پنل مدیریت</title>
+    <title>پنل مدیریت | ثبت‌نامی‌ها</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
     <style>
-        body { font-family: Tahoma, sans-serif; background: #f1f5f9; padding: 20px; }
-        .container { background: white; padding: 30px; border-radius: 16px; max-width: 1200px; margin: 0 auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        h1 { color: #1e3a8a; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 15px; border-bottom: 1px solid #e2e8f0; text-align: right; }
-        th { background: #f8fafc; color: #1e3a8a; }
-        .error { color: red; font-weight: bold; text-align: center; padding: 50px; font-size: 20px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; }
+        body { background: #f1f5f9; min-height: 100vh; padding: 20px; color: #0f172a; }
+        .container { background: #fff; padding: 30px; border-radius: 16px; max-width: 1200px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .topbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 16px; margin-bottom: 20px; }
+        h1 { color: #1e3a8a; font-size: 22px; }
+        .user-info { font-size: 13px; color: #64748b; }
+        .btn { padding: 10px 18px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-family: inherit; font-size: 14px; transition: 0.2s; }
+        .btn-outline { background: #fff; border: 2px solid #cbd5e1; color: #0f172a; }
+        .btn-outline:hover { border-color: #1e3a8a; color: #1e3a8a; }
+        .btn-danger { background: #ef4444; color: #fff; }
+        .btn-danger:hover { background: #dc2626; }
+        .status { padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-size: 14px; font-weight: 600; display: none; }
+        .status.error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; display: block; }
+        .status.info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; display: block; }
+        .status.success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; display: block; }
+
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px 14px; border-bottom: 1px solid #e2e8f0; text-align: right; font-size: 14px; }
+        th { background: #f8fafc; color: #1e3a8a; font-weight: 800; position: sticky; top: 0; }
+        tr:hover td { background: #f8fafc; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; background: #eff6ff; color: #1e3a8a; }
+
+        .loading-overlay {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+            font-weight: 600;
+        }
+        .loading-overlay.active { display: block; }
+        .spinner {
+            display: inline-block;
+            width: 20px; height: 20px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #1e3a8a;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div id="error-message" class="error" style="display: none;">
-            دسترسی غیرمجاز! لطفاً از طریق فرم ورود اقدام کنید.
-        </div>
-        <div id="content" style="display: none;">
+<div class="container">
+    <div class="topbar">
+        <div>
             <h1>مدیریت ثبت‌نامی‌ها</h1>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ردیف</th>
-                        <th>نام</th>
-                        <th>نام خانوادگی</th>
-                        <th>شماره همراه</th>
-                        <th>نوع عضویت</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body">
-                    <tr><td colspan="5" style="text-align:center;">در حال بارگذاری...</td></tr>
-                </tbody>
-            </table>
+            <div class="user-info" id="user-info">در حال بررسی کاربر...</div>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-outline" id="refresh-btn">↻ بروزرسانی</button>
+            <button class="btn btn-danger" id="logout-btn">خروج</button>
         </div>
     </div>
 
-    <script>
-        const SUPABASE_URL = 'https://almalzhslughrfqsthi.supabase.co'; 
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NjgxMDcsImV4cCI6MjEwODM0NDEwN30.IDFFy8WZ8r3hxlOCAwFbsOFkXuwHvvs3Sw8UeIGrc1k';
-        
-        // بررسی رمز در آدرس
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('pass') === '1234') {
-            document.getElementById('content').style.display = 'block';
-            document.getElementById('error-message').style.display = 'none';
-            fetchData();
+    <div id="status" class="status"></div>
+
+    <div id="loading" class="loading-overlay">
+        در حال بارگذاری <span class="spinner"></span>
+    </div>
+
+    <div class="table-wrap" id="table-wrap" style="display:none;">
+        <table>
+            <thead>
+                <tr>
+                    <th>ردیف</th>
+                    <th>نام</th>
+                    <th>نام خانوادگی</th>
+                    <th>شماره همراه</th>
+                    <th>نوع عضویت</th>
+                    <th>تاریخ ثبت</th>
+                </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://almalzhslughrfqsthi.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NjgxMDcsImV4cCI6MjEwODM0NDEwN30.IDFFy8WZ8r3hxlOCAwFbsOFkXuwHvvs3Sw8UeIGrc1k';
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const statusEl = document.getElementById('status');
+const loadingEl = document.getElementById('loading');
+const tableWrap = document.getElementById('table-wrap');
+const tableBody = document.getElementById('table-body');
+const userInfo = document.getElementById('user-info');
+
+function showStatus(text, type = 'info') {
+    statusEl.textContent = text;
+    statusEl.className = 'status ' + type;
+}
+function hideStatus() { statusEl.className = 'status'; }
+function showLoading(on) { loadingEl.classList.toggle('active', on); }
+
+// ۱. چک سشن — اگر نبود برو به admin
+async function requireAuth() {
+    try {
+        const { data: { session }, error } = await sb.auth.getSession();
+        if (error || !session) {
+            window.location.href = 'admin.html';
+            return null;
+        }
+        userInfo.textContent = 'خوش آمدید، ' + (session.user.email || 'ادمین');
+        return session;
+    } catch (e) {
+        console.error('Auth error:', e);
+        window.location.href = 'admin.html';
+        return null;
+    }
+}
+
+// ۲. دریافت داده با timeout و retry
+async function fetchMembers(session, attempt = 1) {
+    try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 10000);
+
+        const { data, error } = await sb
+            .from('members')
+            .select('id, first_name, last_name, mobile, membership_type, created_at')
+            .order('created_at', { ascending: false })
+            .abortSignal(controller.signal);
+
+        clearTimeout(timeout);
+
+        if (error) throw error;
+        return data || [];
+    } catch (err) {
+        if (attempt < 3) {
+            console.warn(`Retry ${attempt} for fetchMembers`);
+            await new Promise(r => setTimeout(r, 1000 * attempt));
+            return fetchMembers(session, attempt + 1);
+        }
+        throw err;
+    }
+}
+
+// ۳. رندر جدول
+function renderTable(data) {
+    tableBody.innerHTML = '';
+    if (!data.length) {
+        tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#64748b; padding:30px;">هنوز کسی ثبت‌نام نکرده است.</td></tr>';
+        return;
+    }
+    data.forEach((item, i) => {
+        const date = item.created_at
+            ? new Date(item.created_at).toLocaleDateString('fa-IR')
+            : '-';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${i + 1}</td>
+            <td>${escapeHtml(item.first_name || '-')}</td>
+            <td>${escapeHtml(item.last_name || '-')}</td>
+            <td dir="ltr" style="text-align:right;">${escapeHtml(item.mobile || '-')}</td>
+            <td><span class="badge">${escapeHtml(item.membership_type || '-')}</span></td>
+            <td>${date}</td>
+        `;
+        tableBody.appendChild(tr);
+    });
+}
+
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+}
+
+// ۴. بارگذاری کلی
+async function loadData() {
+    hideStatus();
+    showLoading(true);
+    tableWrap.style.display = 'none';
+
+    try {
+        const session = await requireAuth();
+        if (!session) return;
+
+        const data = await fetchMembers(session);
+        renderTable(data);
+        tableWrap.style.display = 'block';
+    } catch (err) {
+        console.error('Load error:', err);
+        const m = (err?.message || '').toLowerCase();
+        if (m.includes('permission') || m.includes('rls') || m.includes('policy')) {
+            showStatus('دسترسی به داده‌ها مجاز نیست. لطفاً با مدیر سیستم تماس بگیرید (RLS).', 'error');
+        } else if (m.includes('network') || m.includes('fetch') || m.includes('abort')) {
+            showStatus('اتصال به سرور برقرار نشد. اینترنت را بررسی کنید.', 'error');
         } else {
-            document.getElementById('error-message').style.display = 'block';
-            document.getElementById('content').style.display = 'none';
+            showStatus('خطا در دریافت اطلاعات. لطفاً صفحه را بروزرسانی کنید.', 'error');
         }
+    } finally {
+        showLoading(false);
+    }
+}
 
-        async function fetchData() {
-            const tbody = document.getElementById('table-body');
-            try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/members?select=*`, {
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
-                    }
-                });
+// ۵. خروج
+document.getElementById('logout-btn').addEventListener('click', async () => {
+    try { await sb.auth.signOut(); } catch (e) {}
+    window.location.href = 'admin.html';
+});
 
-                if (!res.ok) {
-                    throw new Error(`کد وضعیت: ${res.status}`);
-                }
+document.getElementById('refresh-btn').addEventListener('click', loadData);
 
-                const data = await res.json();
-                tbody.innerHTML = '';
-                if (data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">هنوز کسی ثبت‌نام نکرده است.</td></tr>';
-                    return;
-                }
-
-                data.forEach((item, index) => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${index + 1}</td>
-                            <td>${item.first_name || '-'}</td>
-                            <td>${item.last_name || '-'}</td>
-                            <td>${item.mobile || '-'}</td>
-                            <td>${item.membership_type || '-'}</td>
-                        </tr>
-                    `;
-                });
-            } catch (e) {
-                // نمایش دقیق خطا
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">خطای دقیق: ${e.message}</td></tr>`;
-            }
-        }
-    </script>
+// شروع
+loadData();
+</script>
 </body>
 </html>
