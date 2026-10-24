@@ -49,7 +49,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // ====== کلید مشترک با داشبورد ======
     const SUPABASE_URL = 'https://almalzhslughrfqsthi.supabase.co'; 
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NjgxMDcsImV4cCI6MjEwODM0NDEwN30.IDFFy8WZ8r3hxlOCAwFbsOFkXuwHvvs3Sw8UeIGrc1k';
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -57,6 +56,11 @@
     const form = document.getElementById('login-form');
     const msg = document.getElementById('msg');
     const btn = document.getElementById('submit-btn');
+
+    // اگر قبلا لاگین کرده بود، بفرست داشبورد
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+        window.location.href = 'dashboard.html';
+    }
 
     function showMsg(text, type) {
         msg.textContent = text;
@@ -76,7 +80,9 @@
             const { data, error } = await sb.auth.signInWithPassword({ email, password });
             if (error) throw error;
             
-            // اگر لاگین موفق بود، برو به داشبورد
+            // ذخیره وضعیت لاگین در مرورگر
+            localStorage.setItem('isLoggedIn', 'true');
+            
             showMsg('ورود موفق! در حال انتقال...', 'success');
             setTimeout(() => window.location.href = 'dashboard.html', 500);
             
