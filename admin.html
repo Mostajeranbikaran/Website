@@ -3,127 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پنل مدیریت</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>تست پنل</title>
     <style>
-        body { background: #f1f5f9; font-family: 'Vazirmatn', sans-serif; margin: 0; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        h1 { color: #1e3a8a; margin-top: 0; }
-        .btn { background: #10b981; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 20px; font-family: inherit; }
-        .table-box { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        th { background: #f8fafc; padding: 15px; text-align: right; border-bottom: 2px solid #e2e8f0; color: #1e3a8a; }
-        td { padding: 15px; border-bottom: 1px solid #e2e8f0; color: #475569; font-size: 14px; }
-        .error { color: red; font-weight: bold; text-align: center; padding: 50px; }
+        body { font-family: sans-serif; text-align: center; padding: 50px; background: #f0f0f0; }
+        .box { background: white; padding: 30px; border-radius: 10px; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { color: #1e3a8a; }
+        .success { color: green; font-size: 20px; font-weight: bold; }
+        .error { color: red; font-size: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
-
-    <div class="container">
-        <div id="error-message" class="error" style="display: none;">
-            دسترسی غیرمجاز! برای ورود باید لینک مخصوص را داشته باشید.
-        </div>
-
-        <div id="panel-content" style="display: none;">
-            <h1>پنل مدیریت</h1>
-            <button onclick="downloadExcel()" class="btn"><i class="fas fa-file-excel"></i> دانلود اکسل</button>
-            <div class="table-box">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ردیف</th>
-                            <th>نام</th>
-                            <th>نام خانوادگی</th>
-                            <th>شماره همراه</th>
-                            <th>نوع عضویت</th>
-                            <th>تاریخ ثبت</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-body">
-                        <tr><td colspan="6" style="text-align:center;">در حال بارگذاری...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <div class="box" id="box">
+        <h1>در حال بررسی...</h1>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const SUPABASE_URL = 'https://almalzhslughrfqsthi.supabase.co'; 
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NjgxMDcsImV4cCI6MjEwODM0NDEwN30.IDFFy8W8Z8r3hxlOCAwFbsOFkXuwHvvs3Sw8UeIGrc1k'; // کلید رو دقیق کپی کن
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        
-        let dataList = [];
-
-        // ====== سیستم لاگین با لینک مخفی ======
-        // آدرس باید به این شکل باشه: admin.html?pass=1234
+        // بررسی آدرس
         const urlParams = new URLSearchParams(window.location.search);
         const pass = urlParams.get('pass');
+        const box = document.getElementById('box');
 
         if (pass === '1234') {
-            // اگر رمز درست بود، پنل رو نشون بده
-            document.getElementById('panel-content').style.display = 'block';
-            document.getElementById('error-message').style.display = 'none';
-            fetchData();
+            box.innerHTML = '<h1 class="success">✅ تبریک! لینک درست است و شما وارد شدید.</h1>';
         } else {
-            // اگر رمز اشتباه بود یا لینک نداشت، ارور بده
-            document.getElementById('error-message').style.display = 'block';
-            document.getElementById('panel-content').style.display = 'none';
-        }
-
-        // دریافت اطلاعات
-        async function fetchData() {
-            const tbody = document.getElementById('table-body');
-            const { data, error } = await supabase.from('members').select('*').order('created_at', { ascending: false });
-
-            if (error) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">خطا: ${error.message}</td></tr>`;
-                return;
-            }
-
-            dataList = data;
-            tbody.innerHTML = '';
-
-            if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">هنوز کسی ثبت‌نام نکرده است.</td></tr>';
-                return;
-            }
-
-            data.forEach((item, index) => {
-                const date = new Date(item.created_at).toLocaleDateString('fa-IR');
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${item.first_name}</td>
-                        <td>${item.last_name}</td>
-                        <td>${item.mobile}</td>
-                        <td>${item.membership_type}</td>
-                        <td>${date}</td>
-                    </tr>
-                `;
-            });
-        }
-
-        // خروجی اکسل
-        function downloadExcel() {
-            if (dataList.length === 0) { alert("داده‌ای وجود ندارد!"); return; }
-
-            const headers = ["نام", "نام خانوادگی", "کد ملی", "شماره همراه", "نوع عضویت", "تاریخ ثبت"];
-            let csvContent = "\uFEFF" + headers.join(",") + "\n";
-
-            dataList.forEach(item => {
-                const date = new Date(item.created_at).toLocaleDateString('fa-IR');
-                csvContent += [item.first_name, item.last_name, item.national_id, item.mobile, item.membership_type, date].join(",") + "\n";
-            });
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "members_data.csv";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            box.innerHTML = '<h1 class="error">❌ دسترسی غیرمجاز! لطفاً لینک را با ?pass=1234 باز کنید.</h1>';
         }
     </script>
 </body>
