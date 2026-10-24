@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مشاهده خبر | مرکز توانمندسازی</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f1f5f9; }
+        .news-page-container { max-width: 800px; margin: 120px auto 50px; background: #fff; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .news-page-title { color: #1e3a8a; font-size: 28px; margin-bottom: 15px; line-height: 1.4; }
+        .news-page-date { color: #64748b; font-size: 14px; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; }
+        .news-page-image { width: 100%; max-height: 400px; object-fit: cover; border-radius: 12px; margin-bottom: 25px; display: none; }
+        .news-page-content { font-size: 16px; line-height: 2.2; color: #334155; white-space: pre-wrap; text-align: justify; }
+        .back-btn { display: inline-block; margin-top: 40px; padding: 12px 24px; background: #1e3a8a; color: #fff; text-decoration: none; border-radius: 10px; font-weight: bold; transition: 0.3s; }
+        .back-btn:hover { background: #152c6b; }
+        .loader { text-align: center; padding: 50px; font-size: 18px; color: #64748b; }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container header-content">
+            <a href="index.html" class="header-logo">
+                <img src="logo.png" alt="لوگو">
+                <span>مرکز توانمندسازی</span>
+            </a>
+            <nav class="main-nav">
+                <a href="index.html">بازگشت به صفحه اصلی</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="news-page-container" id="news-wrapper">
+        <div class="loader">در حال بارگذاری خبر...</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://almalzhslughrfqsthio.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_nbbnzYT0aPekZkxCaEn_Lw_OgDMBUXg';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function loadNewsDetails() {
+            const wrapper = document.getElementById('news-wrapper');
+            const urlParams = new URLSearchParams(window.location.search);
+            const newsId = urlParams.get('id');
+
+            if (!newsId) {
+                wrapper.innerHTML = '<div class="loader">خطا: خبر مورد نظر یافت نشد.</div>';
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase.from('news').select('*').eq('id', newsId).single();
+                
+                if (error || !data) {
+                    wrapper.innerHTML = '<div class="loader">خطا: خبری با این شناسه پیدا نشد.</div>';
+                    return;
+                }
+
+                const date = new Date(data.created_at).toLocaleDateString('fa-IR');
+                
+                let imgHTML = '';
+                if (data.photo_url) {
+                    const fileName = data.photo_url.includes('/') ? data.photo_url.split('/').pop().split('?')[0] : data.photo_url;
+                    const { data: urlData } = await supabase.storage.from('photos').createSignedUrl(fileName, 3600);
+                    if (urlData) {
+                        imgHTML = `<img src="${urlData.signedUrl}" class="news-page-image" style="display:block;">`;
+                    }
+                }
+
+                wrapper.innerHTML = `
+                    <h1 class="news-page-title">${data.title}</h1>
+                    <div class="news-page-date"><i class="far fa-calendar-alt"></i> ${date}</div>
+                    ${imgHTML}
+                    <div class="news-page-content">${data.content}</div>
+                    <div style="text-align: center;">
+                        <a href="index.html" class="back-btn">← بازگشت به صفحه اصلی</a>
+                    </div>
+                `;
+            } catch (e) {
+                console.error(e);
+                wrapper.innerHTML = '<div class="loader">خطایی رخ داد. لطفاً دوباره تلاش کنید.</div>';
+            }
+        }
+
+        loadNewsDetails();
+    </script>
+</body>
+</html>
