@@ -3,340 +3,392 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پنل مدیریت | ثبت‌نامی‌ها</title>
+    <title>پنل مدیریت | داشبورد</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; }
-        body { background: #f1f5f9; min-height: 100vh; padding: 20px; color: #0f172a; }
-        .container { background: #fff; padding: 30px; border-radius: 16px; max-width: 1300px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        .topbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 16px; margin-bottom: 20px; }
-        h1 { color: #1e3a8a; font-size: 22px; }
+        body { background: #f1f5f9; min-height: 100vh; color: #0f172a; }
+        
+        /* هدر و منو */
+        .main-header { background: #fff; border-bottom: 2px solid #e2e8f0; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        h1 { color: #1e3a8a; font-size: 20px; }
         .user-info { font-size: 13px; color: #64748b; margin-top: 4px; }
-        .btn { padding: 10px 18px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-family: inherit; font-size: 14px; transition: 0.2s; }
+        .nav-tabs { display: flex; gap: 10px; }
+        .tab-btn { padding: 10px 20px; border: none; background: #f1f5f9; border-radius: 10px; font-family: inherit; font-weight: 700; color: #64748b; cursor: pointer; transition: 0.2s; }
+        .tab-btn.active { background: #1e3a8a; color: #fff; }
+        
+        /* بدنه */
+        .container { padding: 30px 20px; max-width: 1300px; margin: 0 auto; }
+        .card { background: #fff; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); display: none; }
+        .card.active { display: block; }
+        
+        /* دکمه‌ها */
+        .btn { padding: 10px 18px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-family: inherit; font-size: 14px; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
         .btn-outline { background: #fff; border: 2px solid #cbd5e1; color: #0f172a; }
         .btn-outline:hover { border-color: #1e3a8a; color: #1e3a8a; }
+        .btn-primary { background: #1e3a8a; color: #fff; }
+        .btn-primary:hover { background: #152c6b; }
         .btn-danger { background: #ef4444; color: #fff; }
         .btn-danger:hover { background: #dc2626; }
         .btn-sm { padding: 6px 12px; font-size: 12px; }
 
-        .status { padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-size: 14px; font-weight: 600; display: none; }
+        /* پیام‌ها */
+        .status { padding: 12px 16px; border-radius: 10px; margin-bottom: 20px; font-size: 14px; font-weight: 600; display: none; }
         .status.error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; display: block; }
-        .status.info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; display: block; }
         .status.success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; display: block; }
 
-        .table-wrap { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        /* جدول */
+        .table-wrap { overflow-x: auto; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; }
         th, td { padding: 12px 14px; border-bottom: 1px solid #e2e8f0; text-align: right; font-size: 14px; }
-        th { background: #f8fafc; color: #1e3a8a; font-weight: 800; position: sticky; top: 0; }
+        th { background: #f8fafc; color: #1e3a8a; font-weight: 800; }
         tr:hover td { background: #f8fafc; }
-        .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; background: #eff6ff; color: #1e3a8a; }
+        .badge { padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; background: #eff6ff; color: #1e3a8a; }
 
-        .avatar {
-            width: 40px; height: 40px; border-radius: 50%;
-            object-fit: cover; border: 2px solid #e2e8f0;
-            cursor: pointer; transition: 0.2s;
-        }
-        .avatar:hover { border-color: #1e3a8a; transform: scale(1.1); }
-        .avatar-placeholder {
-            width: 40px; height: 40px; border-radius: 50%;
-            background: #e2e8f0; display: inline-flex; align-items: center;
-            justify-content: center; color: #94a3b8; font-size: 16px;
-        }
-
-        .loading-overlay { display: none; text-align: center; padding: 40px 20px; color: #64748b; font-weight: 600; }
-        .loading-overlay.active { display: block; }
-        .spinner {
-            display: inline-block; width: 20px; height: 20px;
-            border: 3px solid #e2e8f0; border-top-color: #1e3a8a;
-            border-radius: 50%; animation: spin 0.7s linear infinite;
-            margin-left: 8px; vertical-align: middle;
-        }
+        /* فرم‌ها */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+        input[type="text"], textarea, input[type="file"] { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-family: inherit; font-size: 14px; background: #f8fafc; }
+        textarea { resize: vertical; min-height: 100px; }
+        
+        /* عکس‌ها */
+        .avatar { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; border: 1px solid #cbd5e1; }
+        .news-img { max-width: 100px; border-radius: 8px; margin-top: 10px; display: none; }
+        
+        /* لودینگ */
+        .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid #e2e8f0; border-top-color: #1e3a8a; border-radius: 50%; animation: spin 0.7s linear infinite; margin-left: 10px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* مودال نمایش عکس */
-        .modal {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.8); z-index: 9999;
-            justify-content: center; align-items: center; padding: 20px;
-        }
-        .modal.active { display: flex; }
-        .modal img { max-width: 90vw; max-height: 90vh; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
-        .modal-close {
-            position: absolute; top: 20px; left: 20px;
-            background: #fff; border: none; width: 40px; height: 40px;
-            border-radius: 50%; font-size: 22px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="topbar">
-        <div>
-            <h1>مدیریت ثبت‌نامی‌ها</h1>
-            <div class="user-info" id="user-info">در حال بررسی کاربر...</div>
-        </div>
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button class="btn btn-outline" id="refresh-btn">↻ بروزرسانی</button>
-            <button class="btn btn-danger" id="logout-btn">خروج</button>
-        </div>
+<header class="main-header">
+    <div>
+        <h1>پنل مدیریت مرکز</h1>
+        <div class="user-info" id="user-info">در حال بررسی...</div>
     </div>
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('members')">لیست ثبت‌نامی‌ها</button>
+        <button class="tab-btn" onclick="switchTab('news')">مدیریت اخبار</button>
+        <button class="btn btn-danger btn-sm" id="logout-btn" style="margin-right: 20px;">خروج</button>
+    </div>
+</header>
 
+<div class="container">
     <div id="status" class="status"></div>
 
-    <div id="loading" class="loading-overlay">
-        در حال بارگذاری <span class="spinner"></span>
+    <!-- بخش ثبت‌نامی‌ها -->
+    <div id="tab-members" class="card active">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <h2>لیست ثبت‌نامی‌ها</h2>
+            <div style="display:flex; gap:10px;">
+                <button class="btn btn-outline" id="export-csv-btn">📥 دانلود اکسل (CSV)</button>
+                <button class="btn btn-outline" id="print-pdf-btn">🖨️ چاپ / PDF</button>
+                <button class="btn btn-outline" id="refresh-members-btn">↻ بروزرسانی</button>
+            </div>
+        </div>
+        
+        <div id="loading-members" style="text-align:center; padding:40px; display:none;">در حال بارگذاری <span class="spinner"></span></div>
+        
+        <div class="table-wrap" id="table-wrap-members" style="display:none;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ردیف</th><th>عکس</th><th>نام</th><th>نام خانوادگی</th><th>همراه</th><th>نوع عضویت</th><th>تاریخ</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body-members"></tbody>
+            </table>
+        </div>
     </div>
 
-    <div class="table-wrap" id="table-wrap" style="display:none;">
-        <table>
-            <thead>
-                <tr>
-                    <th>ردیف</th>
-                    <th>عکس</th>
-                    <th>نام</th>
-                    <th>نام خانوادگی</th>
-                    <th>شماره همراه</th>
-                    <th>نوع عضویت</th>
-                    <th>تاریخ ثبت</th>
-                    <th>عملیات</th>
-                </tr>
-            </thead>
-            <tbody id="table-body"></tbody>
-        </table>
-    </div>
-</div>
+    <!-- بخش اخبار -->
+    <div id="tab-news" class="card">
+        <h2>مدیریت اخبار</h2>
+        
+        <!-- فرم افزودن خبر -->
+        <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-top: 20px; border: 1px solid #e2e8f0;">
+            <h3 style="margin-bottom: 15px; color: #1e3a8a; font-size: 16px;">افزودن خبر جدید</h3>
+            <div class="form-group">
+                <label>عنوان خبر</label>
+                <input type="text" id="news-title" placeholder="عنوان را وارد کنید...">
+            </div>
+            <div class="form-group">
+                <label>متن خبر</label>
+                <textarea id="news-content" placeholder="متن کامل خبر..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>عکس خبر (اختیاری)</label>
+                <input type="file" id="news-image" accept="image/*">
+                <img id="news-image-preview" class="news-img">
+            </div>
+            <button class="btn btn-primary" id="add-news-btn">ثبت خبر</button>
+        </div>
 
-<!-- مودال عکس -->
-<div class="modal" id="photo-modal">
-    <button class="modal-close" id="modal-close">×</button>
-    <img id="modal-img" src="" alt="عکس عضو">
+        <div id="loading-news" style="text-align:center; padding:40px; display:none;">در حال بارگذاری <span class="spinner"></span></div>
+
+        <!-- لیست اخبار -->
+        <div class="table-wrap" id="table-wrap-news" style="display:none; margin-top: 30px;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>عکس</th><th>عنوان</th><th>تاریخ ثبت</th><th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body-news"></tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// 🔴 آدرس دقیقاً همان که خواستی (با حرف o) و کلید جدید
+// آدرس و کلید جدید
 const SUPABASE_URL = 'https://almalzhslughrfqsthio.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_nbbnzYT0aPekZkxCaEn_Lw_OgDMBUXg';
-
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const statusEl = document.getElementById('status');
-const loadingEl = document.getElementById('loading');
-const tableWrap = document.getElementById('table-wrap');
-const tableBody = document.getElementById('table-body');
 const userInfo = document.getElementById('user-info');
-const photoModal = document.getElementById('photo-modal');
-const modalImg = document.getElementById('modal-img');
 
 // ========== ابزارها ==========
 function showStatus(text, type = 'info') {
     statusEl.textContent = text;
     statusEl.className = 'status ' + type;
+    setTimeout(() => statusEl.className = 'status', 5000);
 }
-function hideStatus() { statusEl.className = 'status'; }
-function showLoading(on) { loadingEl.classList.toggle('active', on); }
-
 function escapeHtml(s) {
-    return String(s ?? '').replace(/[&<>"']/g, c => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-    }[c]));
+    return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
-
 function formatDate(iso) {
     if (!iso) return '-';
-    try { return new Date(iso).toLocaleDateString('fa-IR'); }
-    catch { return '-'; }
+    try { return new Date(iso).toLocaleDateString('fa-IR'); } catch { return '-'; }
 }
-
-function extractFileName(photoUrl) {
-    if (!photoUrl) return null;
-    if (!photoUrl.includes('/')) return photoUrl;
-    const parts = photoUrl.split('?')[0].split('/');
+function extractFileName(url) {
+    if (!url || !url.includes('/')) return url;
+    const parts = url.split('?')[0].split('/');
     return parts[parts.length - 1] || null;
 }
 
-// ========== احراز هویت (چک کردن ادمین بودن) ==========
+// ========== احراز هویت ==========
 async function requireAuth() {
     try {
         const { data: { session }, error } = await sb.auth.getSession();
-        if (error || !session) {
-            window.location.href = 'admin.html';
-            return null;
-        }
+        if (error || !session) { window.location.href = 'admin.html'; return false; }
         
-        const { data: adminData, error: adminError } = await sb
-            .from('admins')
-            .select('user_id')
-            .eq('user_id', session.user.id)
-            .maybeSingle();
-
-        if (adminError) {
-            console.error('Admin check error:', adminError);
-        }
-
+        const { data: adminData } = await sb.from('admins').select('user_id').eq('user_id', session.user.id).maybeSingle();
         if (!adminData) {
             alert('شما دسترسی به پنل مدیریت ندارید.');
             await sb.auth.signOut();
             window.location.href = 'index.html';
-            return null;
+            return false;
         }
+        userInfo.textContent = 'ادمین: ' + session.user.email;
+        return true;
+    } catch (e) { window.location.href = 'admin.html'; return false; }
+}
 
-        userInfo.textContent = 'خوش آمدید، ' + (session.user.email || 'ادمین');
-        return session;
-    } catch (e) {
-        console.error('Auth error:', e);
-        window.location.href = 'admin.html';
-        return null;
+// ========== تغییر تب ==========
+function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+    
+    if (tab === 'members') {
+        document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+        document.getElementById('tab-members').classList.add('active');
+        loadMembers();
+    } else {
+        document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+        document.getElementById('tab-news').classList.add('active');
+        loadNews();
     }
 }
 
-// ========== دریافت داده ==========
-async function fetchMembers(attempt = 1) {
+// ========== بارگذاری اعضا ==========
+let membersData = [];
+async function loadMembers() {
+    const loader = document.getElementById('loading-members');
+    const wrap = document.getElementById('table-wrap-members');
+    const tbody = document.getElementById('table-body-members');
+    
+    loader.style.display = 'block'; wrap.style.display = 'none';
+    
     try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 12000);
-
-        const { data, error } = await sb
-            .from('members')
-            .select('id, first_name, last_name, mobile, membership_type, created_at, photo_url')
-            .order('created_at', { ascending: false })
-            .abortSignal(controller.signal);
-
-        clearTimeout(timeout);
+        const { data, error } = await sb.from('members').select('*').order('created_at', { ascending: false });
         if (error) throw error;
-        return data || [];
-    } catch (err) {
-        if (attempt < 3) {
-            console.warn(`Retry ${attempt} for fetchMembers`);
-            await new Promise(r => setTimeout(r, 1000 * attempt));
-            return fetchMembers(attempt + 1);
-        }
-        throw err;
-    }
-}
-
-// ========== ساخت signed URL برای عکس ==========
-async function getSignedPhotoUrl(fileName) {
-    if (!fileName) return null;
-    try {
-        const { data, error } = await sb.storage
-            .from('photos')
-            .createSignedUrl(fileName, 3600);
-        if (error) throw error;
-        return data.signedUrl;
-    } catch (e) {
-        console.warn('Signed URL failed for', fileName, e);
-        return null;
-    }
-}
-
-// ========== رندر جدول ==========
-async function renderTable(data) {
-    tableBody.innerHTML = '';
-
-    if (!data.length) {
-        tableBody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#64748b; padding:30px;">هنوز کسی ثبت‌نام نکرده است.</td></tr>';
-        return;
-    }
-
-    const rows = data.map((item, i) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${i + 1}</td>
-            <td class="photo-cell">
-                <div class="avatar-placeholder">؟</div>
-            </td>
-            <td>${escapeHtml(item.first_name || '-')}</td>
-            <td>${escapeHtml(item.last_name || '-')}</td>
-            <td dir="ltr" style="text-align:right;">${escapeHtml(item.mobile || '-')}</td>
-            <td><span class="badge">${escapeHtml(item.membership_type || '-')}</span></td>
-            <td>${formatDate(item.created_at)}</td>
-            <td>
-                <button class="btn btn-outline btn-sm view-btn" disabled>مشاهده</button>
-            </td>
-        `;
-        return { tr, item };
-    });
-
-    rows.forEach(({ tr }) => tableBody.appendChild(tr));
-
-    await Promise.all(rows.map(async ({ tr, item }) => {
-        const fileName = extractFileName(item.photo_url);
-        const cell = tr.querySelector('.photo-cell');
-        const viewBtn = tr.querySelector('.view-btn');
-
-        if (!fileName) {
-            cell.innerHTML = '<div class="avatar-placeholder">—</div>';
-            return;
-        }
-
-        const url = await getSignedPhotoUrl(fileName);
-        if (!url) {
-            cell.innerHTML = '<div class="avatar-placeholder">✕</div>';
-            return;
-        }
-
-        const img = document.createElement('img');
-        img.src = url;
-        img.alt = 'عکس';
-        img.className = 'avatar';
-        img.loading = 'lazy';
-        img.addEventListener('click', () => openModal(url));
-        cell.innerHTML = '';
-        cell.appendChild(img);
-
-        viewBtn.disabled = false;
-        viewBtn.addEventListener('click', () => openModal(url));
-    }));
-}
-
-// ========== مودال ==========
-function openModal(url) {
-    modalImg.src = url;
-    photoModal.classList.add('active');
-}
-function closeModal() {
-    photoModal.classList.remove('active');
-    modalImg.src = '';
-}
-document.getElementById('modal-close').addEventListener('click', closeModal);
-photoModal.addEventListener('click', (e) => {
-    if (e.target === photoModal) closeModal();
-});
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeModal();
-});
-
-// ========== بارگذاری کلی ==========
-async function loadData() {
-    hideStatus();
-    showLoading(true);
-    tableWrap.style.display = 'none';
-
-    try {
-        const session = await requireAuth();
-        if (!session) return;
-
-        const data = await fetchMembers();
-        await renderTable(data);
-        tableWrap.style.display = 'block';
-    } catch (err) {
-        console.error('Load error:', err);
-        const m = (err?.message || '').toLowerCase();
-        if (m.includes('permission') || m.includes('rls') || m.includes('policy')) {
-            showStatus('دسترسی به داده‌ها مجاز نیست. Policyهای RLS را بررسی کنید.', 'error');
-        } else if (m.includes('network') || m.includes('fetch') || m.includes('abort')) {
-            showStatus('اتصال به سرور برقرار نشد. اینترنت را بررسی کنید.', 'error');
-        } else if (m.includes('jwt') || m.includes('token')) {
-            showStatus('نشست منقضی شده است. لطفاً دوباره وارد شوید.', 'error');
-            setTimeout(() => window.location.href = 'admin.html', 2000);
+        
+        membersData = data;
+        tbody.innerHTML = '';
+        
+        if (!data.length) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">هنوز کسی ثبت‌نام نکرده است.</td></tr>';
         } else {
-            showStatus('خطا در دریافت اطلاعات. لطفاً بروزرسانی کنید.', 'error');
+            data.forEach((item, i) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td class="photo-cell" id="m-photo-${item.id}">...</td>
+                        <td>${escapeHtml(item.first_name)}</td>
+                        <td>${escapeHtml(item.last_name)}</td>
+                        <td dir="ltr">${escapeHtml(item.mobile)}</td>
+                        <td><span class="badge">${escapeHtml(item.membership_type)}</span></td>
+                        <td>${formatDate(item.created_at)}</td>
+                    </tr>
+                `;
+            });
+            
+            // لود عکس‌ها
+            data.forEach(async (item) => {
+                const cell = document.getElementById(`m-photo-${item.id}`);
+                const fileName = extractFileName(item.photo_url);
+                if (!fileName) { cell.innerHTML = '—'; return; }
+                const { data: urlData } = await sb.storage.from('photos').createSignedUrl(fileName, 3600);
+                if (urlData) cell.innerHTML = `<img src="${urlData.signedUrl}" class="avatar">`;
+                else cell.innerHTML = '✕';
+            });
         }
+        wrap.style.display = 'block';
+    } catch (e) {
+        showStatus('خطا در بارگذاری لیست: ' + e.message, 'error');
     } finally {
-        showLoading(false);
+        loader.style.display = 'none';
+    }
+}
+
+// ========== دانلود اکسل (CSV) ==========
+document.getElementById('export-csv-btn').addEventListener('click', () => {
+    if (!membersData.length) { alert('لیست خالی است.'); return; }
+    
+    const headers = ['ردیف', 'نام', 'نام خانوادگی', 'شماره همراه', 'نوع عضویت', 'تاریخ ثبت'];
+    const rows = membersData.map((item, i) => [
+        i + 1, item.first_name, item.last_name, item.mobile, item.membership_type, formatDate(item.created_at)
+    ]);
+    
+    let csvContent = "\uFEFF"; // برای نمایش صحیح فارسی در اکسل
+    csvContent += headers.join(",") + "\n";
+    rows.forEach(row => { csvContent += row.join(",") + "\n"; });
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `members-${new Date().toISOString().slice(0,10)}.csv`;
+    link.click();
+});
+
+// ========== چاپ PDF ==========
+document.getElementById('print-pdf-btn').addEventListener('click', () => {
+    window.print();
+});
+
+// ========== مدیریت اخبار ==========
+async function loadNews() {
+    const loader = document.getElementById('loading-news');
+    const wrap = document.getElementById('table-wrap-news');
+    const tbody = document.getElementById('table-body-news');
+    
+    loader.style.display = 'block'; wrap.style.display = 'none';
+    
+    try {
+        const { data, error } = await sb.from('news').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+        
+        tbody.innerHTML = '';
+        if (!data.length) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">هیچ خبری ثبت نشده است.</td></tr>';
+        } else {
+            data.forEach(item => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="news-photo-cell" id="n-photo-${item.id}">...</td>
+                        <td><strong>${escapeHtml(item.title)}</strong><br><small>${escapeHtml(item.content).substring(0, 50)}...</small></td>
+                        <td>${formatDate(item.created_at)}</td>
+                        <td><button class="btn btn-danger btn-sm" onclick="deleteNews('${item.id}')">حذف</button></td>
+                    </tr>
+                `;
+            });
+
+            // لود عکس‌های اخبار
+            data.forEach(async (item) => {
+                const cell = document.getElementById(`n-photo-${item.id}`);
+                const fileName = extractFileName(item.photo_url);
+                if (!fileName) { cell.innerHTML = '—'; return; }
+                const { data: urlData } = await sb.storage.from('photos').createSignedUrl(fileName, 3600);
+                if (urlData) cell.innerHTML = `<img src="${urlData.signedUrl}" class="avatar">`;
+                else cell.innerHTML = '✕';
+            });
+        }
+        wrap.style.display = 'block';
+    } catch (e) {
+        showStatus('خطا در بارگذاری اخبار: ' + e.message, 'error');
+    } finally {
+        loader.style.display = 'none';
+    }
+}
+
+// پیش‌نمایش عکس خبر
+document.getElementById('news-image').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    const preview = document.getElementById('news-image-preview');
+    if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = 'block';
+    } else {
+        preview.style.display = 'none';
+    }
+});
+
+// ثبت خبر جدید
+document.getElementById('add-news-btn').addEventListener('click', async () => {
+    const title = document.getElementById('news-title').value.trim();
+    const content = document.getElementById('news-content').value.trim();
+    const file = document.getElementById('news-image').files[0];
+    const btn = document.getElementById('add-news-btn');
+
+    if (!title || !content) { showStatus('لطفاً عنوان و متن خبر را وارد کنید.', 'error'); return; }
+    
+    btn.disabled = true; btn.textContent = 'در حال ثبت...';
+    
+    try {
+        let photoUrl = null;
+        // آپلود عکس در صورت وجود
+        if (file) {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `news-${Date.now()}.${fileExt}`;
+            const { error: uploadErr } = await sb.storage.from('photos').upload(fileName, file);
+            if (uploadErr) throw new Error('خطا در آپلود عکس: ' + uploadErr.message);
+            photoUrl = fileName; // ما فقط اسم فایل رو ذخیره می‌کنیم
+        }
+
+        const { error } = await sb.from('news').insert([{ title, content, photo_url: photoUrl }]);
+        if (error) throw error;
+
+        showStatus('خبر با موفقیت ثبت شد!', 'success');
+        
+        // پاک کردن فرم
+        document.getElementById('news-title').value = '';
+        document.getElementById('news-content').value = '';
+        document.getElementById('news-image').value = '';
+        document.getElementById('news-image-preview').style.display = 'none';
+        
+        // بروزرسانی لیست
+        loadNews();
+    } catch (e) {
+        showStatus(e.message, 'error');
+    } finally {
+        btn.disabled = false; btn.textContent = 'ثبت خبر';
+    }
+});
+
+// حذف خبر
+async function deleteNews(id) {
+    if (!confirm('آیا از حذف این خبر مطمئن هستید؟')) return;
+    try {
+        const { error } = await sb.from('news').delete().eq('id', id);
+        if (error) throw error;
+        showStatus('خبر حذف شد.', 'success');
+        loadNews();
+    } catch (e) {
+        showStatus('خطا در حذف: ' + e.message, 'error');
     }
 }
 
@@ -346,11 +398,14 @@ document.getElementById('logout-btn').addEventListener('click', async () => {
     window.location.href = 'admin.html';
 });
 
-// ========== بروزرسانی ==========
-document.getElementById('refresh-btn').addEventListener('click', loadData);
+document.getElementById('refresh-members-btn').addEventListener('click', loadMembers);
 
 // شروع
-loadData();
+(async () => {
+    if (await requireAuth()) {
+        loadMembers();
+    }
+})();
 </script>
 </body>
 </html>
