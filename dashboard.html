@@ -150,17 +150,14 @@ function formatDate(iso) {
 }
 
 // استخراج نام فایل از URL ذخیره‌شده در دیتابیس
-// photo_url ممکنه شامل مسیر کامل یا فقط نام فایل باشه
 function extractFileName(photoUrl) {
     if (!photoUrl) return null;
-    // اگر فقط نام فایل باشه
-    if (!photoUrl.includes('/')) return photoUrl;
-    // از انتهای URL بعد از آخرین / بگیر
+    if (!photoUrl.includes('/')) return photoUrl; // اگر فقط نام فایل باشه
     const parts = photoUrl.split('?')[0].split('/');
     return parts[parts.length - 1] || null;
 }
 
-// ========== احراز هویت ==========
+// ========== احراز هویت (چک کردن ادمین بودن) ==========
 async function requireAuth() {
     try {
         const { data: { session }, error } = await sb.auth.getSession();
@@ -168,6 +165,26 @@ async function requireAuth() {
             window.location.href = 'admin.html';
             return null;
         }
+        
+        // چک کردن اینکه آیا این کاربر در جدول ادمین‌ها هست یا نه
+        const { data: adminData, error: adminError } = await sb
+            .from('admins')
+            .select('user_id')
+            .eq('user_id', session.user.id)
+            .maybeSingle();
+
+        if (adminError) {
+            console.error('Admin check error:', adminError);
+        }
+
+        // اگر ادمین نبود، از پنل بیرونش کن
+        if (!adminData) {
+            alert('شما دسترسی به پنل مدیریت ندارید.');
+            await sb.auth.signOut();
+            window.location.href = 'index.html';
+            return null;
+        }
+
         userInfo.textContent = 'خوش آمدید، ' + (session.user.email || 'ادمین');
         return session;
     } catch (e) {
