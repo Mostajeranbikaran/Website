@@ -47,7 +47,7 @@
             <h1>مدیریت مرکز</h1>
             <div style="font-size:13px; color:#64748b; margin-top:4px;" id="user-email">در حال بررسی...</div>
         </div>
-        <a href="admin.html" class="btn-danger" onclick="logout()">خروج از حساب</a>
+        <button onclick="logout()" class="btn-danger">خروج از حساب</button>
     </div>
 
     <div class="tabs">
@@ -107,29 +107,19 @@
 
     let membersList = [];
 
-    // ====== ۱. بررسی لاگین (با قفل محلی) ======
+    // ====== ۱. بررسی لاگین (با سشن Supabase) ======
     async function checkAuth() {
-        // اول از حافظه مرورگر چک میکنیم
-        if (localStorage.getItem('isLoggedIn') !== 'true') {
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) {
             window.location.href = 'admin.html';
             return;
         }
-
-        // اگر در حافظه بود، سشن Supabase رو چک میکنیم (با تاخیر)
-        setTimeout(async () => {
-            const { data: { session } } = await sb.auth.getSession();
-            if (session) {
-                document.getElementById('user-email').innerText = "خوش آمدید، " + session.user.email;
-            } else {
-                document.getElementById('user-email').innerText = "ادمین";
-            }
-            loadMembers();
-        }, 1000); // ۱ ثانیه صبر میکنه تا اینترنت وصل بشه
+        document.getElementById('user-email').innerText = "خوش آمدید، " + session.user.email;
+        loadMembers();
     }
 
     // ====== خروج ======
     async function logout() {
-        localStorage.removeItem('isLoggedIn'); // پاک کردن قفل
         await sb.auth.signOut();
         window.location.href = 'admin.html';
     }
