@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت | داشبورد</title>
+    <style>
+        body { background-color: #f1f5f9; font-family: 'Vazirmatn', sans-serif; padding: 20px; margin: 0; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        h1 { color: #1e3a8a; }
+        .btn { background: #10b981; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 15px; border-bottom: 1px solid #e2e8f0; text-align: right; }
+        th { background: #f8fafc; color: #1e3a8a; }
+        .error { color: red; font-weight: bold; text-align: center; padding: 50px; font-size: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="error-message" class="error" style="display: none;">
+            دسترسی غیرمجاز! لطفاً از طریق فرم ورود اقدام کنید.
+        </div>
+
+        <div id="content" style="display: none;">
+            <h1>مدیریت ثبت‌نامی‌ها</h1>
+            <button onclick="downloadExcel()" class="btn">دانلود اکسل</button>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ردیف</th>
+                        <th>نام</th>
+                        <th>نام خانوادگی</th>
+                        <th>شماره همراه</th>
+                        <th>نوع عضویت</th>
+                        <th>تاریخ ثبت</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://almalzhslughrfqsthi.supabase.co'; 
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NjgxMDcsImV4cCI6MjEwODM0NDEwN30.IDFFy8WZ8r3hxlOCAwFbsOFkXuwHvvs3Sw8UeIGrc1k';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        let dataList = [];
+
+        // بررسی آدرس (اگر رمز 1234 بود، محتوا رو نشون بده)
+        const urlParams = new URLSearchParams(window.location.search);
+        const pass = urlParams.get('pass');
+
+        if (pass === '1234') {
+            document.getElementById('content').style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+            fetchData();
+        } else {
+            document.getElementById('error-message').style.display = 'block';
+            document.getElementById('content').style.display = 'none';
+        }
+
+        // دریافت اطلاعات
+        async function fetchData() {
+            const tbody = document.getElementById('table-body');
+            const { data, error } = await supabase.from('members').select('*').order('created_at', { ascending: false });
+
+            if (error) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">خطا: ${error.message}</td></tr>`;
+                return;
+            }
+
+            dataList = data;
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">هنوز کسی ثبت‌نام نکرده است.</td></tr>';
+                return;
+            }
+
+            data.forEach((item, index) => {
+                const date = new Date(item.created_at).toLocaleDateString('fa-IR');
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.first_name}</td>
+                        <td>${item.last_name}</td>
+                        <td>${item.mobile}</td>
+                        <td>${item.membership_type}</td>
+                        <td>${date}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // دانلود اکسل
+        function downloadExcel() {
+            if (dataList.length === 0) { alert("داده‌ای وجود ندارد!"); return; }
+            const headers = ["نام", "نام خانوادگی", "کد ملی", "شماره همراه", "نوع عضویت", "تاریخ ثبت"];
+            let csvContent = "\uFEFF" + headers.join(",") + "\n";
+            dataList.forEach(item => {
+                const date = new Date(item.created_at).toLocaleDateString('fa-IR');
+                csvContent += [item.first_name, item.last_name, item.national_id, item.mobile, item.membership_type, date].join(",") + "\n";
+            });
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "members_data.csv";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
