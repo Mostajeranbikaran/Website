@@ -6,11 +6,9 @@
     <title>مرکز توانمندسازی مستاجران و بیکاران | عضویت رایگان</title>
     <meta name="description" content="عضویت رایگان در مرکز توانمندسازی مستاجران و بیکاران. تعاونی مسکن، بیمه تکمیلی، مشاوره حقوقی و شغلی.">
     
-    <!-- تنظیمات نمایش لوگو در تب مرورگر و گوگل (Favicon) -->
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="apple-touch-icon" href="favicon.png">
 
-    <!-- اطلاعات سایت برای گوگل و شبکه‌های اجتماعی (OG Tags) -->
     <meta property="og:title" content="مرکز توانمندسازی مستاجران و بیکاران">
     <meta property="og:description" content="عضویت رایگان، تعاونی مسکن، بیمه تکمیلی و مشاوره شغلی.">
     <meta property="og:image" content="https://mostajeranbikaran.github.io/Website/logo.png">
@@ -33,27 +31,6 @@
         @keyframes zoomIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes fadeInUp { 0% { transform: translateY(20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
         @keyframes fadeOutSplash { 0% { opacity: 1; visibility: visible; } 100% { opacity: 0; visibility: hidden; display: none; } }
-
-        /* ===== استایل پنجره بازشو خبر ===== */
-        #news-modal {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-            z-index: 10000; justify-content: center; align-items: center; padding: 20px;
-        }
-        #news-modal.active { display: flex; }
-        .news-modal-content {
-            background: #fff; padding: 30px; border-radius: 16px; max-width: 700px;
-            width: 100%; max-height: 90vh; overflow-y: auto; position: relative;
-            animation: fadeInModal 0.3s ease;
-        }
-        .news-modal-close {
-            position: absolute; top: 15px; left: 15px; background: #ef4444;
-            color: #fff; border: none; width: 35px; height: 35px; border-radius: 50%;
-            font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: 0.2s;
-        }
-        .news-modal-close:hover { background: #dc2626; transform: scale(1.1); }
-        .news-modal-img { width: 100%; max-height: 350px; object-fit: cover; border-radius: 10px; margin-bottom: 20px; display: none; }
-        @keyframes fadeInModal { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -240,17 +217,6 @@
         </div>
     </footer>
 
-    <!-- پنجره بازشو (Modal) برای نمایش کامل خبر -->
-    <div id="news-modal">
-        <div class="news-modal-content">
-            <button class="news-modal-close" onclick="closeNewsModal()">×</button>
-            <img id="modal-news-img" class="news-modal-img" src="" alt="عکس خبر">
-            <h2 id="modal-news-title" style="color: #1e3a8a; margin-bottom: 10px;"></h2>
-            <div id="modal-news-date" style="color: #64748b; font-size: 14px; margin-bottom: 20px;"></div>
-            <p id="modal-news-content" style="line-height: 2; color: #334155; white-space: pre-wrap;"></p>
-        </div>
-    </div>
-
     <!-- اسکریپت‌های سوپابیس و فرم -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
@@ -258,21 +224,18 @@
         const SUPABASE_URL = 'https://almalzhslughrfqsthio.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_nbbnzYT0aPekZkxCaEn_Lw_OgDMBUXg';
 
-        // اجرای کدها بعد از لود کامل صفحه
         document.addEventListener("DOMContentLoaded", function() {
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-            // حذف انیمیشن بعد از ۲ ثانیه
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 if (splash) splash.style.display = 'none';
             }, 2000);
 
-            // نمایش تاریخ در فرم
             const printDate = document.getElementById('print-date');
             if (printDate) printDate.innerText = "تاریخ ثبت: " + new Date().toLocaleDateString('fa-IR');
 
-            // ========== بارگذاری و نمایش اخبار ==========
+            // ========== بارگذاری اخبار در صفحه اصلی ==========
             async function loadNews() {
                 const container = document.getElementById('news-container');
                 try {
@@ -287,44 +250,23 @@
                     data.forEach(item => {
                         const date = new Date(item.created_at).toLocaleDateString('fa-IR');
                         
-                        // ساخت کارت خبر
-                        const card = document.createElement('div');
-                        card.className = 'news-card';
-                        card.style.cursor = 'pointer';
-                        card.innerHTML = `
-                            <div class="news-date"><i class="far fa-calendar-alt"></i> ${date}</div>
-                            <h3>${item.title}</h3>
-                            <p>${item.content.substring(0, 100)}${item.content.length > 100 ? '...' : ''}</p>
+                        // کوتاه کردن متن خبر برای جلوگیری از به‌هم‌ریختگی ظاهر
+                        const shortContent = item.content.length > 200 
+                            ? item.content.substring(0, 200) + '...' 
+                            : item.content;
+
+                        container.innerHTML += `
+                            <div class="news-card" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+                                <div>
+                                    <div class="news-date"><i class="far fa-calendar-alt"></i> ${date}</div>
+                                    <h3 style="margin-bottom: 10px;">${item.title}</h3>
+                                    <p style="word-break: break-word; overflow: hidden; line-height: 1.8;">${shortContent}</p>
+                                </div>
+                                <a href="news.html?id=${item.id}" style="display: inline-block; margin-top: 15px; color: #ea580c; font-weight: bold; text-decoration: none; border: 1px solid #ea580c; padding: 8px 15px; border-radius: 8px; text-align: center; transition: 0.3s;">
+                                    مطالعه بیشتر <i class="fas fa-arrow-left" style="font-size: 12px;"></i>
+                                </a>
+                            </div>
                         `;
-                        
-                        // کلیک روی کارت برای باز شدن مودال
-                        card.addEventListener('click', async () => {
-                            // ۱. پر کردن اطلاعات متنی
-                            document.getElementById('modal-news-title').innerText = item.title;
-                            document.getElementById('modal-news-date').innerHTML = `<i class="far fa-calendar-alt"></i> ${date}`;
-                            document.getElementById('modal-news-content').innerText = item.content;
-                            
-                            // ۲. لود کردن عکس
-                            const modalImg = document.getElementById('modal-news-img');
-                            if (item.photo_url) {
-                                // استخراج نام فایل از آدرس ذخیره شده
-                                const fileName = item.photo_url.includes('/') ? item.photo_url.split('/').pop().split('?')[0] : item.photo_url;
-                                const { data: urlData } = await supabase.storage.from('photos').createSignedUrl(fileName, 3600);
-                                if (urlData) {
-                                    modalImg.src = urlData.signedUrl;
-                                    modalImg.style.display = 'block';
-                                } else {
-                                    modalImg.style.display = 'none';
-                                }
-                            } else {
-                                modalImg.style.display = 'none';
-                            }
-                            
-                            // ۳. نمایش مودال
-                            document.getElementById('news-modal').classList.add('active');
-                        });
-                        
-                        container.appendChild(card);
                     });
                 } catch(e) {
                     console.error("News error:", e);
@@ -333,21 +275,11 @@
             }
             loadNews();
 
-            // ========== بستن مودال ==========
-            window.closeNewsModal = function() {
-                document.getElementById('news-modal').classList.remove('active');
-            };
-            
-            // بستن با کلیک روی فضای خالی بیرون مودال
-            document.getElementById('news-modal').addEventListener('click', function(e) {
-                if (e.target === this) window.closeNewsModal();
-            });
-
             // ========== فرم ثبت‌نام ==========
             const form = document.getElementById('membership-form');
             if (form) {
                 form.addEventListener('submit', async function(event) {
-                    event.preventDefault(); // جلوگیری از رفرش صفحه
+                    event.preventDefault();
 
                     const btn = document.getElementById('submit-btn');
                     const msg = document.getElementById('form-msg');
@@ -360,7 +292,6 @@
                     let photoUrl = null;
 
                     try {
-                        // ۱. آپلود عکس در صورت وجود
                         const photoFile = formData.get('attachment');
                         if (photoFile && photoFile.size > 0) {
                             const fileExt = photoFile.name.split('.').pop();
@@ -374,7 +305,6 @@
                             }
                         }
 
-                        // ۲. آماده‌سازی اطلاعات برای دیتابیس
                         const memberData = {
                             membership_type: formData.get('membership_type'),
                             first_name: formData.get('first_name'),
@@ -395,7 +325,6 @@
                             photo_url: photoUrl
                         };
 
-                        // ۳. ثبت در دیتابیس
                         const { error } = await supabase.from('members').insert([memberData]);
 
                         if (error) {
@@ -405,7 +334,7 @@
                         } else {
                             msg.style.color = "green";
                             msg.innerText = "✅ ثبت‌نام شما با موفقیت انجام شد!";
-                            form.reset(); // پاک کردن فرم
+                            form.reset();
                         }
                     } catch (err) {
                         console.error("Catch Error:", err);
