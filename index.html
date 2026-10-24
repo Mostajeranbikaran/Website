@@ -225,99 +225,122 @@
         // 🔴 آدرس و کلید جدید
         const SUPABASE_URL = 'https://almalzhslughrfqsthio.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_nbbnzYT0aPekZkxCaEn_Lw_OgDMBUXg';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // حذف انیمیشن بعد از ۲ ثانیه
-        window.addEventListener('load', () => {
+        // اجرای کدها بعد از لود کامل صفحه
+        document.addEventListener("DOMContentLoaded", function() {
+            // ساخت کلاینت سوپابیس
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+            // حذف انیمیشن بعد از ۲ ثانیه
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 if (splash) splash.style.display = 'none';
             }, 2000);
-        });
 
-        document.getElementById('print-date').innerText = "تاریخ ثبت: " + new Date().toLocaleDateString('fa-IR');
+            // نمایش تاریخ در فرم
+            const printDate = document.getElementById('print-date');
+            if (printDate) printDate.innerText = "تاریخ ثبت: " + new Date().toLocaleDateString('fa-IR');
 
-        // بارگذاری اخبار در صفحه اصلی
-        async function loadNews() {
-            const container = document.getElementById('news-container');
-            const { data, error } = await supabase.from('news').select('*').order('created_at', { ascending: false }).limit(3);
-            
-            if (error || data.length === 0) {
-                container.innerHTML = '<p style="text-align: center; width: 100%; color: #64748b;">هنوز خبری ثبت نشده است.</p>';
-                return;
-            }
-            container.innerHTML = '';
-            data.forEach(item => {
-                const date = new Date(item.created_at).toLocaleDateString('fa-IR');
-                container.innerHTML += `
-                    <div class="news-card">
-                        <div class="news-date"><i class="far fa-calendar-alt"></i> ${date}</div>
-                        <h3>${item.title}</h3>
-                        <p>${item.content}</p>
-                    </div>`;
-            });
-        }
-        loadNews();
-
-        // ارسال فرم ثبت‌نام (با جلوگیری از رفرش)
-        document.getElementById('membership-form').addEventListener('submit', async (e) => {
-            e.preventDefault(); // 🚨 جلوگیری از رفرش صفحه
-            
-            const btn = document.getElementById('submit-btn');
-            const msg = document.getElementById('form-msg');
-            
-            btn.disabled = true;
-            btn.innerText = "در حال ارسال...";
-            msg.innerText = "";
-
-            const formData = new FormData(e.target);
-            
-            let photoUrl = null;
-            const photoFile = formData.get('attachment');
-            if (photoFile && photoFile.size > 0) {
-                const fileExt = photoFile.name.split('.').pop();
-                const fileName = `member-${Date.now()}.${fileExt}`;
-                const { error: uploadError } = await supabase.storage.from('photos').upload(fileName, photoFile);
-                if (!uploadError) {
-                    photoUrl = fileName;
+            // بارگذاری اخبار در صفحه اصلی
+            async function loadNews() {
+                const container = document.getElementById('news-container');
+                try {
+                    const { data, error } = await supabase.from('news').select('*').order('created_at', { ascending: false }).limit(3);
+                    
+                    if (error || !data || data.length === 0) {
+                        container.innerHTML = '<p style="text-align: center; width: 100%; color: #64748b;">هنوز خبری ثبت نشده است.</p>';
+                        return;
+                    }
+                    container.innerHTML = '';
+                    data.forEach(item => {
+                        const date = new Date(item.created_at).toLocaleDateString('fa-IR');
+                        container.innerHTML += `
+                            <div class="news-card">
+                                <div class="news-date"><i class="far fa-calendar-alt"></i> ${date}</div>
+                                <h3>${item.title}</h3>
+                                <p>${item.content}</p>
+                            </div>`;
+                    });
+                } catch(e) {
+                    console.error("News error:", e);
                 }
             }
+            loadNews();
 
-            const memberData = {
-                membership_type: formData.get('membership_type'),
-                first_name: formData.get('first_name'),
-                last_name: formData.get('last_name'),
-                national_id: formData.get('national_id'),
-                birth_date: formData.get('birth_date'),
-                marital_status: formData.get('marital_status'),
-                children: formData.get('children'),
-                address: formData.get('address'),
-                postal_code: formData.get('postal_code'),
-                mobile: formData.get('mobile'),
-                landline: formData.get('landline'),
-                housing_status: formData.get('housing_status'),
-                job: formData.get('job'),
-                education: formData.get('education'),
-                social_security: formData.get('social_security'),
-                supplementary_insurance: formData.get('supplementary_insurance'),
-                photo_url: photoUrl
-            };
+            // 🚨 مدیریت فرم ثبت‌نام (با ترمز محکم برای جلوگیری از رفرش) 🚨
+            const form = document.getElementById('membership-form');
+            if (form) {
+                form.addEventListener('submit', async function(event) {
+                    event.preventDefault(); // جلوگیری از رفرش صفحه
 
-            const { error } = await supabase.from('members').insert([memberData]);
+                    const btn = document.getElementById('submit-btn');
+                    const msg = document.getElementById('form-msg');
+                    
+                    btn.disabled = true;
+                    btn.innerText = "در حال ارسال...";
+                    msg.innerText = "";
 
-            if (error) {
-                console.error(error);
-                msg.style.color = "red";
-                msg.innerText = "خطا: " + error.message;
-                btn.disabled = false;
-                btn.innerText = "ارسال فرم و ثبت‌نام";
-            } else {
-                msg.style.color = "green";
-                msg.innerText = "✅ ثبت‌نام شما با موفقیت انجام شد!";
-                e.target.reset();
-                btn.disabled = false;
-                btn.innerText = "ارسال فرم و ثبت‌نام";
-                // setTimeout(() => { window.print(); }, 500); // اگر می‌خوای خودکار پرینت بشه، این خط رو آنکامنت کن
+                    const formData = new FormData(form);
+                    let photoUrl = null;
+
+                    try {
+                        // ۱. آپلود عکس در صورت وجود
+                        const photoFile = formData.get('attachment');
+                        if (photoFile && photoFile.size > 0) {
+                            const fileExt = photoFile.name.split('.').pop();
+                            const fileName = `member-${Date.now()}.${fileExt}`;
+                            const { error: uploadError } = await supabase.storage.from('photos').upload(fileName, photoFile);
+                            
+                            if (!uploadError) {
+                                photoUrl = fileName;
+                            } else {
+                                console.error("Upload Error:", uploadError);
+                            }
+                        }
+
+                        // ۲. آماده‌سازی اطلاعات برای دیتابیس
+                        const memberData = {
+                            membership_type: formData.get('membership_type'),
+                            first_name: formData.get('first_name'),
+                            last_name: formData.get('last_name'),
+                            national_id: formData.get('national_id'),
+                            birth_date: formData.get('birth_date'),
+                            marital_status: formData.get('marital_status'),
+                            children: formData.get('children'),
+                            address: formData.get('address'),
+                            postal_code: formData.get('postal_code'),
+                            mobile: formData.get('mobile'),
+                            landline: formData.get('landline'),
+                            housing_status: formData.get('housing_status'),
+                            job: formData.get('job'),
+                            education: formData.get('education'),
+                            social_security: formData.get('social_security'),
+                            supplementary_insurance: formData.get('supplementary_insurance'),
+                            photo_url: photoUrl
+                        };
+
+                        // ۳. ثبت در دیتابیس
+                        const { error } = await supabase.from('members').insert([memberData]);
+
+                        if (error) {
+                            console.error("Insert Error:", error);
+                            msg.style.color = "red";
+                            msg.innerText = "خطا در ثبت: " + error.message;
+                        } else {
+                            msg.style.color = "green";
+                            msg.innerText = "✅ ثبت‌نام شما با موفقیت انجام شد!";
+                            form.reset(); // پاک کردن فرم
+                        }
+                    } catch (err) {
+                        console.error("Catch Error:", err);
+                        msg.style.color = "red";
+                        msg.innerText = "خطای غیرمنتظره رخ داد: " + err.message;
+                    } finally {
+                        // دکمه در هر حالتی که بود، دوباره فعال شود
+                        btn.disabled = false;
+                        btn.innerText = "ارسال فرم و ثبت‌نام";
+                    }
+                });
             }
         });
     </script>
