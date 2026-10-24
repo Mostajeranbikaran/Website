@@ -23,7 +23,7 @@
         .card.active { display: block; }
         
         /* دکمه‌ها */
-        .btn { padding: 10px 18px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-family: inherit; font-size: 14px; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn { padding: 10px 18px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-family: inherit; font-size: 14px; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-outline { background: #fff; border: 2px solid #cbd5e1; color: #0f172a; }
         .btn-outline:hover { border-color: #1e3a8a; color: #1e3a8a; }
         .btn-primary { background: #1e3a8a; color: #fff; }
@@ -82,8 +82,6 @@
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
             <h2>لیست ثبت‌نامی‌ها</h2>
             <div style="display:flex; gap:10px;">
-                <button class="btn btn-outline" id="export-csv-btn">📥 دانلود اکسل (CSV)</button>
-                <button class="btn btn-outline" id="print-pdf-btn">🖨️ چاپ / PDF</button>
                 <button class="btn btn-outline" id="refresh-members-btn">↻ بروزرسانی</button>
             </div>
         </div>
@@ -94,7 +92,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>ردیف</th><th>عکس</th><th>نام</th><th>نام خانوادگی</th><th>همراه</th><th>نوع عضویت</th><th>تاریخ</th>
+                        <th>ردیف</th><th>عکس</th><th>نام</th><th>نام خانوادگی</th><th>همراه</th><th>نوع عضویت</th><th>تاریخ</th><th>عملیات</th>
                     </tr>
                 </thead>
                 <tbody id="table-body-members"></tbody>
@@ -143,7 +141,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// آدرس و کلید جدید
 const SUPABASE_URL = 'https://almalzhslughrfqsthio.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_nbbnzYT0aPekZkxCaEn_Lw_OgDMBUXg';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -221,7 +218,7 @@ async function loadMembers() {
         tbody.innerHTML = '';
         
         if (!data.length) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">هنوز کسی ثبت‌نام نکرده است.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">هنوز کسی ثبت‌نام نکرده است.</td></tr>';
         } else {
             data.forEach((item, i) => {
                 tbody.innerHTML += `
@@ -233,6 +230,9 @@ async function loadMembers() {
                         <td dir="ltr">${escapeHtml(item.mobile)}</td>
                         <td><span class="badge">${escapeHtml(item.membership_type)}</span></td>
                         <td>${formatDate(item.created_at)}</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="printMember('${item.id}')">🖨️ چاپ فرم</button>
+                        </td>
                     </tr>
                 `;
             });
@@ -255,30 +255,71 @@ async function loadMembers() {
     }
 }
 
-// ========== دانلود اکسل (CSV) ==========
-document.getElementById('export-csv-btn').addEventListener('click', () => {
-    if (!membersData.length) { alert('لیست خالی است.'); return; }
-    
-    const headers = ['ردیف', 'نام', 'نام خانوادگی', 'شماره همراه', 'نوع عضویت', 'تاریخ ثبت'];
-    const rows = membersData.map((item, i) => [
-        i + 1, item.first_name, item.last_name, item.mobile, item.membership_type, formatDate(item.created_at)
-    ]);
-    
-    let csvContent = "\uFEFF"; // برای نمایش صحیح فارسی در اکسل
-    csvContent += headers.join(",") + "\n";
-    rows.forEach(row => { csvContent += row.join(",") + "\n"; });
-    
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `members-${new Date().toISOString().slice(0,10)}.csv`;
-    link.click();
-});
+// ========== چاپ فرم تکی (برای هر شخص) ==========
+async function printMember(id) {
+    const person = membersData.find(m => m.id == id);
+    if (!person) return;
 
-// ========== چاپ PDF ==========
-document.getElementById('print-pdf-btn').addEventListener('click', () => {
-    window.print();
-});
+    let photoHTML = '<p>بدون عکس</p>';
+    const fileName = extractFileName(person.photo_url);
+    if (fileName) {
+        const { data } = await sb.storage.from('photos').createSignedUrl(fileName, 3600);
+        if (data) photoHTML = `<img src="${data.signedUrl}" style="width:120px; height:120px; object-fit:cover; border-radius:8px; border:1px solid #ccc;">`;
+    }
+
+    // ساخت پنجره جدید برای چاپ
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html dir="rtl">
+        <head>
+            <title>فرم ${person.first_name} ${person.last_name}</title>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+            <style>
+                body { font-family: 'Vazirmatn', sans-serif; padding: 20px; color: #000; }
+                h2 { text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                th, td { border: 1px solid #999; padding: 8px 12px; text-align: right; font-size: 14px; }
+                th { background: #f0f0f0; width: 25%; }
+                .photo-box { text-align: center; margin-top: 20px; }
+                @media print {
+                    body { -webkit-print-color-adjust: exact; }
+                }
+            </style>
+        </head>
+        <body>
+            <h2>فرم ثبت‌نام - مرکز توانمندسازی</h2>
+            <div class="photo-box">
+                ${photoHTML}
+            </div>
+            <table>
+                <tr><th>نام</th><td>${escapeHtml(person.first_name || '-')}</td></tr>
+                <tr><th>نام خانوادگی</th><td>${escapeHtml(person.last_name || '-')}</td></tr>
+                <tr><th>کد ملی</th><td>${escapeHtml(person.national_id || '-')}</td></tr>
+                <tr><th>تاریخ تولد</th><td>${escapeHtml(person.birth_date || '-')}</td></tr>
+                <tr><th>وضعیت تاهل</th><td>${escapeHtml(person.marital_status || '-')}</td></tr>
+                <tr><th>تعداد فرزندان</th><td>${escapeHtml(person.children || '-')}</td></tr>
+                <tr><th>شماره همراه</th><td>${escapeHtml(person.mobile || '-')}</td></tr>
+                <tr><th>تلفن ثابت</th><td>${escapeHtml(person.landline || '-')}</td></tr>
+                <tr><th>نشانی</th><td>${escapeHtml(person.address || '-')}</td></tr>
+                <tr><th>کد پستی</th><td>${escapeHtml(person.postal_code || '-')}</td></tr>
+                <tr><th>وضعیت مسکن</th><td>${escapeHtml(person.housing_status || '-')}</td></tr>
+                <tr><th>شغل</th><td>${escapeHtml(person.job || '-')}</td></tr>
+                <tr><th>تحصیلات</th><td>${escapeHtml(person.education || '-')}</td></tr>
+                <tr><th>کد بیمه</th><td>${escapeHtml(person.social_security || '-')}</td></tr>
+                <tr><th>بیمه تکمیلی</th><td>${escapeHtml(person.supplementary_insurance || '-')}</td></tr>
+                <tr><th>نوع عضویت</th><td>${escapeHtml(person.membership_type || '-')}</td></tr>
+                <tr><th>تاریخ ثبت فرم</th><td>${formatDate(person.created_at)}</td></tr>
+            </table>
+            <script>
+                window.onload = function() {
+                    setTimeout(() => { window.print(); }, 500);
+                }
+            <\/script>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+}
 
 // ========== مدیریت اخبار ==========
 async function loadNews() {
@@ -307,7 +348,6 @@ async function loadNews() {
                 `;
             });
 
-            // لود عکس‌های اخبار
             data.forEach(async (item) => {
                 const cell = document.getElementById(`n-photo-${item.id}`);
                 const fileName = extractFileName(item.photo_url);
@@ -350,13 +390,12 @@ document.getElementById('add-news-btn').addEventListener('click', async () => {
     
     try {
         let photoUrl = null;
-        // آپلود عکس در صورت وجود
         if (file) {
             const fileExt = file.name.split('.').pop();
             const fileName = `news-${Date.now()}.${fileExt}`;
             const { error: uploadErr } = await sb.storage.from('photos').upload(fileName, file);
             if (uploadErr) throw new Error('خطا در آپلود عکس: ' + uploadErr.message);
-            photoUrl = fileName; // ما فقط اسم فایل رو ذخیره می‌کنیم
+            photoUrl = fileName;
         }
 
         const { error } = await sb.from('news').insert([{ title, content, photo_url: photoUrl }]);
@@ -364,13 +403,11 @@ document.getElementById('add-news-btn').addEventListener('click', async () => {
 
         showStatus('خبر با موفقیت ثبت شد!', 'success');
         
-        // پاک کردن فرم
         document.getElementById('news-title').value = '';
         document.getElementById('news-content').value = '';
         document.getElementById('news-image').value = '';
         document.getElementById('news-image-preview').style.display = 'none';
         
-        // بروزرسانی لیست
         loadNews();
     } catch (e) {
         showStatus(e.message, 'error');
