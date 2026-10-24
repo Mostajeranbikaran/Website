@@ -4,52 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مرکز توانمندسازی مستاجران و بیکاران | عضویت رایگان</title>
-    <meta name="description" content="عضویت رایگان در مرکز توانمندسازی مستاجران و بیکاران. تعاونی مسکن، بیمه تکمیلی، مشاوره حقوقی و شغلی.">
-    
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="apple-touch-icon" href="favicon.png">
-
-    <meta property="og:title" content="مرکز توانمندسازی مستاجران و بیکاران">
-    <meta property="og:description" content="عضویت رایگان، تعاونی مسکن، بیمه تکمیلی و مشاوره شغلی.">
-    <meta property="og:image" content="https://mostajeranbikaran.github.io/Website/logo.png">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://mostajeranbikaran.github.io/Website/">
-
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        /* استایل انیمیشن ورودی */
-        #splash-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #ffffff; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 9999;
-            animation: fadeOutSplash 0.5s ease 2s forwards;
-        }
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffffff; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; animation: fadeOutSplash 0.5s ease 2s forwards; }
         .splash-logo { width: 130px; margin-bottom: 20px; animation: zoomIn 1s ease-out forwards; }
         .splash-title { color: #1e3a8a; font-size: 22px; font-weight: 900; opacity: 0; animation: fadeInUp 1s ease-out 0.5s forwards; text-align: center; padding: 0 20px; }
         @keyframes zoomIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes fadeInUp { 0% { transform: translateY(20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
         @keyframes fadeOutSplash { 0% { opacity: 1; visibility: visible; } 100% { opacity: 0; visibility: hidden; display: none; } }
-
-        /* استایل پنجره بازشو (Modal) */
-        #news-modal {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-            z-index: 10000; justify-content: center; align-items: center; padding: 20px;
-        }
-        #news-modal.active { display: flex; }
-        .news-modal-content {
-            background: #fff; padding: 30px; border-radius: 16px; max-width: 700px;
-            width: 100%; max-height: 90vh; overflow-y: auto; position: relative;
-            animation: fadeInModal 0.3s ease;
-        }
-        .news-modal-close {
-            position: absolute; top: 15px; left: 15px; background: #ef4444;
-            color: #fff; border: none; width: 35px; height: 35px; border-radius: 50%;
-            font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-        }
-        .news-modal-img { width: 100%; max-height: 350px; object-fit: cover; border-radius: 10px; margin-bottom: 20px; display: none; }
-        @keyframes fadeInModal { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -205,17 +169,6 @@
         </div>
     </footer>
 
-    <!-- پنجره بازشو (Modal) برای نمایش کامل خبر -->
-    <div id="news-modal">
-        <div class="news-modal-content">
-            <button class="news-modal-close" onclick="closeNewsModal()">×</button>
-            <img id="modal-news-img" class="news-modal-img" src="" alt="عکس خبر">
-            <h2 id="modal-news-title" style="color: #1e3a8a; margin-bottom: 10px;"></h2>
-            <div id="modal-news-date" style="color: #64748b; font-size: 14px; margin-bottom: 20px;"></div>
-            <p id="modal-news-content" style="line-height: 2; color: #334155; white-space: pre-wrap; text-align: justify;"></p>
-        </div>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const SUPABASE_URL = 'https://almalzhslughrfqsthio.supabase.co';
@@ -232,7 +185,7 @@
             const printDate = document.getElementById('print-date');
             if (printDate) printDate.innerText = "تاریخ ثبت: " + new Date().toLocaleDateString('fa-IR');
 
-            // ========== بارگذاری اخبار (با سرعت بالا و کوتاه کردن هوشمند) ==========
+            // ========== بارگذاری اخبار در صفحه اصلی ==========
             async function loadNews() {
                 const container = document.getElementById('news-container');
                 try {
@@ -247,30 +200,24 @@
                     data.forEach(item => {
                         const date = new Date(item.created_at).toLocaleDateString('fa-IR');
                         
-                        // 🌟 ترفند کوتاه کردن هوشمند: فقط ۱۵ کلمه اول را نشان بده
+                        // کوتاه کردن متن به ۲۰ کلمه اول
                         const words = item.content.split(' ');
-                        const shortContent = words.length > 15 
-                            ? words.slice(0, 15).join(' ') + '...' 
+                        const shortContent = words.length > 20 
+                            ? words.slice(0, 20).join(' ') + '...' 
                             : item.content;
 
-                        const card = document.createElement('div');
-                        card.className = 'news-card';
-                        card.innerHTML = `
-                            <div class="news-date"><i class="far fa-calendar-alt"></i> ${date}</div>
-                            <h3>${item.title}</h3>
-                            <p style="word-break: break-word; line-height: 1.8;">${shortContent}</p>
-                            <button onclick="openNewsModal('${item.id}')" style="display: inline-block; margin-top: 15px; color: #ea580c; font-weight: bold; background: none; border: 1px solid #ea580c; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 14px;">
-                                مطالعه بیشتر <i class="fas fa-arrow-left" style="font-size: 12px;"></i>
-                            </button>
+                        container.innerHTML += `
+                            <div class="news-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                                <div>
+                                    <div class="news-date"><i class="far fa-calendar-alt"></i> ${date}</div>
+                                    <h3>${item.title}</h3>
+                                    <p style="word-break: break-word;">${shortContent}</p>
+                                </div>
+                                <a href="news.html?id=${item.id}" style="display: inline-block; margin-top: 15px; color: #ea580c; font-weight: bold; text-decoration: none; border: 1px solid #ea580c; padding: 8px 15px; border-radius: 8px; text-align: center;">
+                                    مطالعه بیشتر <i class="fas fa-arrow-left" style="font-size: 12px;"></i>
+                                </a>
+                            </div>
                         `;
-                        
-                        // ذخیره اطلاعات خبر در خود دکمه برای دسترسی سریع (بدون نیاز به دیتابیس مجدد)
-                        card.querySelector('button').addEventListener('click', async (e) => {
-                            e.stopPropagation();
-                            openNewsModal(item.id, item);
-                        });
-
-                        container.appendChild(card);
                     });
                 } catch(e) {
                     console.error("News error:", e);
@@ -278,45 +225,6 @@
                 }
             }
             loadNews();
-
-            // ========== باز کردن مودال خبر (بدون رفتن به صفحه جدید) ==========
-            window.openNewsModal = async function(id, itemData = null) {
-                const modalImg = document.getElementById('modal-news-img');
-                const titleEl = document.getElementById('modal-news-title');
-                const dateEl = document.getElementById('modal-news-date');
-                const contentEl = document.getElementById('modal-news-content');
-
-                // اگر اطلاعات از قبل داشتیم (برای سرعت بالا)، مستقیم نشان بده
-                if (itemData) {
-                    titleEl.innerText = itemData.title;
-                    dateEl.innerHTML = `<i class="far fa-calendar-alt"></i> ${new Date(itemData.created_at).toLocaleDateString('fa-IR')}`;
-                    contentEl.innerText = itemData.content;
-                    
-                    if (itemData.photo_url) {
-                        const fileName = itemData.photo_url.includes('/') ? itemData.photo_url.split('/').pop().split('?')[0] : itemData.photo_url;
-                        const { data: urlData } = await supabase.storage.from('photos').createSignedUrl(fileName, 3600);
-                        if (urlData) {
-                            modalImg.src = urlData.signedUrl;
-                            modalImg.style.display = 'block';
-                        }
-                    } else {
-                        modalImg.style.display = 'none';
-                    }
-                } else {
-                    // اگر از جای دیگری صدا زده شد، از دیتابیس بخوان (مثل قبل)
-                    // ... (کدهای قبلی برای اطمینان)
-                }
-                
-                document.getElementById('news-modal').classList.add('active');
-            };
-
-            window.closeNewsModal = function() {
-                document.getElementById('news-modal').classList.remove('active');
-            };
-            
-            document.getElementById('news-modal').addEventListener('click', function(e) {
-                if (e.target === this) window.closeNewsModal();
-            });
 
             // ========== فرم ثبت‌نام ==========
             const form = document.getElementById('membership-form');
