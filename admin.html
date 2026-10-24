@@ -3,84 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پنل مدیریت | مرکز توانمندسازی</title>
+    <title>پنل مدیریت</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        body { background: #f8fafc; display: block; }
+        body { background: #f8fafc; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
         
-        /* استایل لاگین */
-        .login-wrapper { display: flex; justify-content: center; align-items: center; min-height: 80vh; }
-        .login-card { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 400px; text-align: center; }
+        /* صفحه لاگین */
+        .login-card { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; }
         .login-card h2 { color: #1e3a8a; margin-bottom: 25px; }
-        .login-card input { width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 10px; font-family: inherit; font-size: 16px; margin-bottom: 15px; text-align: left; direction: ltr; }
+        .login-card input { width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 10px; font-family: inherit; font-size: 18px; margin-bottom: 20px; text-align: center; letter-spacing: 5px; }
         .login-card input:focus { outline: none; border-color: #1e3a8a; }
-        .login-card button { width: 100%; padding: 15px; background: #1e3a8a; color: white; border: none; border-radius: 10px; font-family: inherit; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .login-card button { width: 100%; padding: 15px; background: #1e3a8a; color: white; border: none; border-radius: 10px; font-family: inherit; font-size: 16px; font-weight: bold; cursor: pointer; }
         .login-card button:hover { background: #152c6b; }
         .error-text { color: #ef4444; font-weight: bold; margin-top: 15px; font-size: 14px; }
 
-        /* استایل پنل */
-        .dashboard-wrapper { display: none; max-width: 1200px; margin: 40px auto; padding: 20px; }
-        .dash-header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 20px 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; }
-        .dash-header h1 { color: #1e3a8a; font-size: 24px; margin: 0; }
-        .logout-btn { background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: inherit; }
+        /* پنل اصلی */
+        #dashboard-section { display: none; width: 100%; max-width: 1200px; margin: 40px auto; padding: 20px; }
+        .dash-header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .dash-header h1 { color: #1e3a8a; margin: 0; font-size: 22px; }
+        .logout-btn { background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
         
-        /* دکمه‌های بالای پنل */
-        .action-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
-        .btn-group-right { display: flex; gap: 10px; }
-        .excel-btn { background: #10b981; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: inherit; display: flex; align-items: center; gap: 8px; }
-        .settings-btn { background: #64748b; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: inherit; display: flex; align-items: center; gap: 8px; }
+        .action-bar { margin-bottom: 15px; display: flex; gap: 10px; }
+        .excel-btn { background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
         
-        /* جدول */
-        .table-box { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow-x: auto; }
+        .table-box { background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        th { background: #f8fafc; padding: 15px; text-align: right; font-weight: bold; color: #1e3a8a; border-bottom: 2px solid #e2e8f0; white-space: nowrap; }
-        td { padding: 15px; border-bottom: 1px solid #e2e8f0; color: #475569; font-size: 14px; white-space: nowrap; }
+        th { background: #f8fafc; padding: 15px; text-align: right; border-bottom: 2px solid #e2e8f0; color: #1e3a8a; font-weight: bold; }
+        td { padding: 15px; border-bottom: 1px solid #e2e8f0; color: #475569; font-size: 14px; }
         tr:hover td { background: #f8fafc; }
-
-        /* بخش تغییر رمز (مخفی) */
-        .change-pass-box { display: none; background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #e2e8f0; max-width: 400px; }
-        .change-pass-box h3 { color: #1e3a8a; margin-bottom: 15px; font-size: 18px; }
-        .change-pass-box input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; }
-        .change-pass-box button { background: #1e3a8a; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-family: inherit; font-weight: bold; }
-        #pass-msg { margin-top: 10px; font-weight: bold; font-size: 14px; }
     </style>
 </head>
 <body>
 
     <!-- صفحه لاگین -->
-    <div id="login-section" class="login-wrapper">
-        <div class="login-card">
-            <h2>ورود به پنل مدیریت</h2>
-            <input type="email" id="email" placeholder="ایمیل ادمین" dir="ltr">
-            <input type="password" id="password" placeholder="رمز عبور" dir="ltr">
-            <button onclick="login()">ورود به پنل</button>
-            <p id="login-error" class="error-text"></p>
-            <a href="index.html" style="display: block; margin-top: 20px; color: #64748b; text-decoration: none; font-size: 14px;">&rarr; بازگشت به سایت</a>
-        </div>
+    <div id="login-section" class="login-card">
+        <h2>ورود به پنل مدیریت</h2>
+        <input type="password" id="password-input" placeholder="****" maxlength="10">
+        <button onclick="doLogin()">ورود</button>
+        <p id="login-error" class="error-text"></p>
+        <a href="index.html" style="display: block; margin-top: 20px; color: #64748b; text-decoration: none; font-size: 14px;">&rarr; بازگشت به سایت</a>
     </div>
 
-    <!-- پنل مدیریت -->
-    <div id="dashboard-section" class="dashboard-wrapper">
+    <!-- پنل مدیریت (بعد از ورود) -->
+    <div id="dashboard-section">
         <div class="dash-header">
-            <h1>مدیریت ثبت‌نامی‌ها</h1>
-            <button onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> خروج</button>
+            <h1>لیست ثبت‌نامی‌ها</h1>
+            <button onclick="doLogout()" class="logout-btn">خروج</button>
         </div>
         
         <div class="action-bar">
-            <div class="btn-group-right">
-                <button onclick="downloadExcel()" class="excel-btn"><i class="fas fa-file-excel"></i> دانلود خروجی اکسل</button>
-                <button onclick="togglePassBox()" class="settings-btn"><i class="fas fa-key"></i> تغییر رمز عبور</button>
-            </div>
-        </div>
-
-        <!-- فرم تغییر رمز (مخفی) -->
-        <div id="change-pass-box" class="change-pass-box">
-            <h3>تغییر رمز عبور</h3>
-            <input type="password" id="new-password" placeholder="رمز جدید (حداقل ۶ کاراکتر)" dir="ltr">
-            <button onclick="changePassword()">ذخیره رمز جدید</button>
-            <p id="pass-msg"></p>
+            <button onclick="downloadExcel()" class="excel-btn"><i class="fas fa-file-excel"></i> دانلود اکسل</button>
         </div>
 
         <div class="table-box">
@@ -104,76 +77,38 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // ===== کلیدهای دیتابیس =====
         const SUPABASE_URL = 'https://almalzhslughrfqsthi.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NjgxMDcsImV4cCI6MjEwODM0NDEwN30.IDFFy8WZ8r3hxlOCAwFbsOFkXuwHvvs3Sw8UeIGrc1k';
-        
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        let dataList = []; 
+        
+        let dataList = [];
 
-        // ====== ورود با ایمیل و رمز ======
-        async function login() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+        // تابع ورود (رمز 1234)
+        function doLogin() {
+            const pass = document.getElementById('password-input').value;
             const error = document.getElementById('login-error');
             
-            error.innerText = "در حال بررسی...";
-            
-            const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password });
-
-            if (authError) {
-                error.innerText = "ایمیل یا رمز عبور اشتباه است!";
-            } else {
+            if (pass === '1234') {
                 error.innerText = "";
                 document.getElementById('login-section').style.display = 'none';
                 document.getElementById('dashboard-section').style.display = 'block';
-                fetchData();
-            }
-        }
-
-        // ====== خروج ======
-        async function logout() {
-            await supabase.auth.signOut();
-            document.getElementById('login-section').style.display = 'flex';
-            document.getElementById('dashboard-section').style.display = 'none';
-            document.getElementById('change-pass-box').style.display = 'none';
-            document.getElementById('email').value = '';
-            document.getElementById('password').value = '';
-        }
-
-        // ====== نمایش/مخفی کردن فرم تغییر رمز ======
-        function togglePassBox() {
-            const box = document.getElementById('change-pass-box');
-            box.style.display = box.style.display === 'none' ? 'block' : 'none';
-        }
-
-        // ====== تغییر رمز ======
-        async function changePassword() {
-            const newPass = document.getElementById('new-password').value;
-            const msg = document.getElementById('pass-msg');
-
-            if (newPass.length < 6) {
-                msg.style.color = "red";
-                msg.innerText = "رمز باید حداقل ۶ کاراکتر باشد!";
-                return;
-            }
-
-            const { error } = await supabase.auth.updateUser({ password: newPass });
-
-            if (error) {
-                msg.style.color = "red";
-                msg.innerText = "خطا: " + error.message;
+                loadData();
             } else {
-                msg.style.color = "green";
-                msg.innerText = "✅ رمز با موفقیت تغییر کرد!";
-                document.getElementById('new-password').value = '';
+                error.innerText = "رمز عبور اشتباه است!";
             }
         }
 
-        // ====== دریافت اطلاعات ======
-        async function fetchData() {
-            const tbody = document.getElementById('table-body');
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">در حال دریافت اطلاعات...</td></tr>';
+        // تابع خروج
+        function doLogout() {
+            document.getElementById('login-section').style.display = 'block';
+            document.getElementById('dashboard-section').style.display = 'none';
+            document.getElementById('password-input').value = '';
+        }
 
+        // دریافت اطلاعات
+        async function loadData() {
+            const tbody = document.getElementById('table-body');
             const { data, error } = await supabase.from('members').select('*').order('created_at', { ascending: false });
 
             if (error) {
@@ -185,7 +120,7 @@
             tbody.innerHTML = '';
 
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">هنوز کسی ثبت‌نام نکرده است.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">اطلاعاتی ثبت نشده است.</td></tr>';
                 return;
             }
 
@@ -204,9 +139,9 @@
             });
         }
 
-        // ====== خروجی اکسل ======
+        // خروجی اکسل
         function downloadExcel() {
-            if (dataList.length === 0) { alert("داده‌ای برای دانلود وجود ندارد!"); return; }
+            if (dataList.length === 0) { alert("داده‌ای وجود ندارد!"); return; }
 
             const headers = ["نام", "نام خانوادگی", "کد ملی", "شماره همراه", "نوع عضویت", "تاریخ ثبت"];
             let csvContent = "\uFEFF" + headers.join(",") + "\n";
