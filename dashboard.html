@@ -116,6 +116,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+// 🔴 آدرس اصلاح شده (حرف o اضافه حذف شد)
 const SUPABASE_URL = 'https://almalzhslughrfqsthi.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NjgxMDcsImV4cCI6MjEwODM0NDEwN30.IDFFy8WZ8r3hxlOCAwFbsOFkXuwHvvs3Sw8UeIGrc1k';
 
@@ -149,10 +150,9 @@ function formatDate(iso) {
     catch { return '-'; }
 }
 
-// استخراج نام فایل از URL ذخیره‌شده در دیتابیس
 function extractFileName(photoUrl) {
     if (!photoUrl) return null;
-    if (!photoUrl.includes('/')) return photoUrl; // اگر فقط نام فایل باشه
+    if (!photoUrl.includes('/')) return photoUrl;
     const parts = photoUrl.split('?')[0].split('/');
     return parts[parts.length - 1] || null;
 }
@@ -166,7 +166,6 @@ async function requireAuth() {
             return null;
         }
         
-        // چک کردن اینکه آیا این کاربر در جدول ادمین‌ها هست یا نه
         const { data: adminData, error: adminError } = await sb
             .from('admins')
             .select('user_id')
@@ -177,7 +176,6 @@ async function requireAuth() {
             console.error('Admin check error:', adminError);
         }
 
-        // اگر ادمین نبود، از پنل بیرونش کن
         if (!adminData) {
             alert('شما دسترسی به پنل مدیریت ندارید.');
             await sb.auth.signOut();
@@ -225,7 +223,7 @@ async function getSignedPhotoUrl(fileName) {
     try {
         const { data, error } = await sb.storage
             .from('photos')
-            .createSignedUrl(fileName, 3600); // ۱ ساعت اعتبار
+            .createSignedUrl(fileName, 3600);
         if (error) throw error;
         return data.signedUrl;
     } catch (e) {
@@ -243,7 +241,6 @@ async function renderTable(data) {
         return;
     }
 
-    // ساخت ردیف‌ها با placeholder برای عکس
     const rows = data.map((item, i) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -263,10 +260,8 @@ async function renderTable(data) {
         return { tr, item };
     });
 
-    // اتصال ردیف‌ها به جدول
     rows.forEach(({ tr }) => tableBody.appendChild(tr));
 
-    // گرفتن signed URL برای هر عکس (به‌صورت موازی)
     await Promise.all(rows.map(async ({ tr, item }) => {
         const fileName = extractFileName(item.photo_url);
         const cell = tr.querySelector('.photo-cell');
@@ -283,7 +278,6 @@ async function renderTable(data) {
             return;
         }
 
-        // عکس آواتار
         const img = document.createElement('img');
         img.src = url;
         img.alt = 'عکس';
@@ -293,7 +287,6 @@ async function renderTable(data) {
         cell.innerHTML = '';
         cell.appendChild(img);
 
-        // دکمه مشاهده فعال
         viewBtn.disabled = false;
         viewBtn.addEventListener('click', () => openModal(url));
     }));
