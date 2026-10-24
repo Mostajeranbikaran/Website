@@ -39,18 +39,20 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // 🔴 آدرس و کلید
         const SUPABASE_URL = 'https://almalzhslughrfqsthio.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_nbbnzYT0aPekZkxCaEn_Lw_OgDMBUXg';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        async function loadNewsDetails() {
+        document.addEventListener("DOMContentLoaded", async function() {
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             const wrapper = document.getElementById('news-wrapper');
-            // گرفتن ID خبر از آدرس صفحه
+            
+            // گرفتن ID از آدرس
             const urlParams = new URLSearchParams(window.location.search);
             const newsId = urlParams.get('id');
 
             if (!newsId) {
-                wrapper.innerHTML = '<div class="loader">خطا: خبر مورد نظر یافت نشد.</div>';
+                wrapper.innerHTML = '<div class="loader">خطا: خبر مورد نظر یافت نشد (ID خالی است).</div>';
                 return;
             }
 
@@ -58,13 +60,12 @@
                 const { data, error } = await supabase.from('news').select('*').eq('id', newsId).single();
                 
                 if (error || !data) {
-                    wrapper.innerHTML = '<div class="loader">خطا: خبری با این شناسه پیدا نشد.</div>';
+                    wrapper.innerHTML = '<div class="loader">خطا: خبری با این شناسه پیدا نشد. ممکن است حذف شده باشد.</div>';
                     return;
                 }
 
                 const date = new Date(data.created_at).toLocaleDateString('fa-IR');
                 
-                // اگر عکس داشت، لینک امنش رو می‌گیریم
                 let imgHTML = '';
                 if (data.photo_url) {
                     const fileName = data.photo_url.includes('/') ? data.photo_url.split('/').pop().split('?')[0] : data.photo_url;
@@ -74,7 +75,6 @@
                     }
                 }
 
-                // نمایش نهایی خبر در صفحه
                 wrapper.innerHTML = `
                     <h1 class="news-page-title">${data.title}</h1>
                     <div class="news-page-date"><i class="far fa-calendar-alt"></i> ${date}</div>
@@ -88,9 +88,7 @@
                 console.error(e);
                 wrapper.innerHTML = '<div class="loader">خطایی رخ داد. لطفاً دوباره تلاش کنید.</div>';
             }
-        }
-
-        loadNewsDetails();
+        });
     </script>
 </body>
 </html>
