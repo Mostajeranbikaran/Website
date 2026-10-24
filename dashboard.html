@@ -4,19 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>پنل مدیریت | داشبورد</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- فایل style.css رو کاملاً حذف کردیم تا تداخل نداشته باشه -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { background-color: #f1f5f9; font-family: 'Vazirmatn', sans-serif; padding: 20px; margin: 0; }
-        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        h1 { color: #1e3a8a; margin-top: 0; }
-        .btn { background: #10b981; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 20px; font-family: inherit; }
+        /* استایل‌های اختصاصی این صفحه */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            background-color: #f1f5f9; 
+            font-family: Tahoma, 'Vazirmatn', sans-serif; 
+            padding: 20px; 
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 16px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+        }
+        h1 { 
+            color: #1e3a8a; 
+            margin-bottom: 20px; 
+            font-size: 24px;
+        }
+        .btn { 
+            background: #10b981; 
+            color: white; 
+            padding: 12px 24px; 
+            border: none; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            margin-bottom: 20px; 
+            font-family: inherit;
+            font-size: 15px;
+        }
         .btn:hover { background: #059669; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; min-width: 800px; }
-        th, td { padding: 15px; border-bottom: 1px solid #e2e8f0; text-align: right; }
-        th { background: #f8fafc; color: #1e3a8a; font-weight: bold; }
-        .error { color: red; font-weight: bold; text-align: center; padding: 50px; font-size: 20px; }
         .table-wrapper { overflow-x: auto; }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            min-width: 800px; 
+        }
+        th, td { 
+            padding: 15px; 
+            border-bottom: 1px solid #e2e8f0; 
+            text-align: right; 
+        }
+        th { 
+            background: #f8fafc; 
+            color: #1e3a8a; 
+            font-weight: bold; 
+        }
+        .error { 
+            color: red; 
+            font-weight: bold; 
+            text-align: center; 
+            padding: 50px; 
+            font-size: 20px; 
+        }
     </style>
 </head>
 <body>
@@ -60,22 +107,20 @@
         
         let dataList = [];
 
-        // ۱. بررسی آدرس (آیا رمز در آدرس هست؟)
+        // ۱. بررسی آدرس
         const urlParams = new URLSearchParams(window.location.search);
         const pass = urlParams.get('pass');
 
         if (pass === '1234') {
-            // اگر رمز درست بود، محتوا رو نشون بده
             document.getElementById('content').style.display = 'block';
             document.getElementById('error-message').style.display = 'none';
-            fetchData(); // گرفتن اطلاعات
+            fetchData(); 
         } else {
-            // اگر رمز اشتباه بود، خطا بده
             document.getElementById('error-message').style.display = 'block';
             document.getElementById('content').style.display = 'none';
         }
 
-        // ۲. دریافت اطلاعات از دیتابیس
+        // ۲. دریافت اطلاعات
         async function fetchData() {
             const tbody = document.getElementById('table-body');
             const { data, error } = await supabase.from('members').select('*').order('created_at', { ascending: false });
