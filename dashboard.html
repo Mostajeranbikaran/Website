@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { background-color: #f1f5f9; font-family: Tahoma, 'Vazirmatn', sans-serif; padding: 20px; margin: 0; }
-        .container { max-width: 1300px; margin: 0 auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .container { max-width: 1400px; margin: 0 auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 25px; }
         .header h1 { color: #1e3a8a; margin: 0; font-size: 24px; }
@@ -20,22 +20,21 @@
         .tab-content.active { display: block; }
 
         .table-wrapper { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 900px; }
-        th, td { padding: 15px; border-bottom: 1px solid #e2e8f0; text-align: right; }
+        table { width: 100%; border-collapse: collapse; min-width: 1200px; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; text-align: right; font-size: 14px; }
         th { background: #f8fafc; color: #1e3a8a; }
         
-        /* دکمه‌های داخل جدول */
-        .action-btn { padding: 8px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; margin-left: 5px; display: inline-flex; align-items: center; gap: 5px; }
+        .action-btn { padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer; font-size: 12px; font-weight: bold; margin-left: 5px; }
         .btn-excel { background: #10b981; color: white; }
         .btn-pdf { background: #ef4444; color: white; }
         
-        /* فرم‌ها */
-        .btn-main { background: #10b981; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 20px; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 8px; font-weight: bold; color: #1e3a8a; }
         .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; box-sizing: border-box; }
         .submit-btn { background: #ea580c; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; }
+        
         .error { color: red; font-weight: bold; text-align: center; padding: 20px; }
+        .success { color: green; font-weight: bold; text-align: center; padding: 20px; }
     </style>
 </head>
 <body>
@@ -62,14 +61,19 @@
                         <thead>
                             <tr>
                                 <th>ردیف</th>
-                                <th>نام و نام خانوادگی</th>
+                                <th>نام</th>
+                                <th>نام خانوادگی</th>
+                                <th>کد ملی</th>
                                 <th>شماره همراه</th>
                                 <th>نوع عضویت</th>
-                                <th>عملیات (برای هر نفر)</th>
+                                <th>وضعیت مسکن</th>
+                                <th>شغل</th>
+                                <th>تاریخ ثبت</th>
+                                <th>عملیات</th>
                             </tr>
                         </thead>
                         <tbody id="members-body">
-                            <tr><td colspan="5" style="text-align:center;">در حال بارگذاری...</td></tr>
+                            <tr><td colspan="10" style="text-align:center;">در حال بارگذاری...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -89,7 +93,7 @@
                 <p id="news-msg" style="text-align:center; font-weight:bold; margin-top:15px;"></p>
             </div>
 
-            <!-- تب تغییر رمز -->
+            <!-- تب تنظیمات -->
             <div id="tab-settings" class="tab-content">
                 <div class="form-group">
                     <label>رمز عبور جدید</label>
@@ -102,12 +106,13 @@
     </div>
 
     <script>
+        // ====== کلیدهای اتصال به Supabase (از قبل تنظیم شده) ======
         const SUPABASE_URL = 'https://almalzhslughrfqsthi.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NjgxMDcsImV4cCI6MjEwODM0NDEwN30.IDFFy8WZ8r3hxlOCAwFbsOFkXuwHvvs3Sw8UeIGrc1k';
         
         let membersList = [];
 
-        // بررسی لاگین (رمز در آدرس)
+        // بررسی آدرس (لاگین با ?pass=1234)
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('pass') === '1234') {
             document.getElementById('main-panel').style.display = 'block';
@@ -124,29 +129,38 @@
             event.target.classList.add('active');
         }
 
-        // بارگذاری اطلاعات ثبت‌نامی‌ها
+        // دریافت اطلاعات ثبت‌نامی‌ها
         async function loadMembers() {
             const tbody = document.getElementById('members-body');
             try {
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/members?select=*&order=created_at.desc`, {
                     headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
                 });
+                
+                if (!res.ok) throw new Error("خطا در اتصال به دیتابیس");
+                
                 const data = await res.json();
                 membersList = data;
                 tbody.innerHTML = '';
                 
                 if (data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">اطلاعاتی یافت نشد.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">اطلاعاتی یافت نشد.</td></tr>';
                     return;
                 }
 
                 data.forEach((item, index) => {
+                    const date = item.created_at ? new Date(item.created_at).toLocaleDateString('fa-IR') : '-';
                     tbody.innerHTML += `
                         <tr>
                             <td>${index + 1}</td>
-                            <td>${item.first_name} ${item.last_name}</td>
-                            <td>${item.mobile}</td>
-                            <td>${item.membership_type}</td>
+                            <td>${item.first_name || '-'}</td>
+                            <td>${item.last_name || '-'}</td>
+                            <td>${item.national_id || '-'}</td>
+                            <td>${item.mobile || '-'}</td>
+                            <td>${item.membership_type || '-'}</td>
+                            <td>${item.housing_status || '-'}</td>
+                            <td>${item.job || '-'}</td>
+                            <td>${date}</td>
                             <td>
                                 <button class="action-btn btn-excel" onclick="downloadSingleExcel(${index})"><i class="fas fa-file-excel"></i> اکسل</button>
                                 <button class="action-btn btn-pdf" onclick="downloadSinglePDF(${index})"><i class="fas fa-file-pdf"></i> PDF</button>
@@ -154,15 +168,15 @@
                         </tr>`;
                 });
             } catch (e) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">خطا در دریافت اطلاعات. اینترنت یا فیلترشکن خود را بررسی کنید.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; color:red;">خطا در دریافت اطلاعات. لطفاً فیلترشکن خود را روشن کنید.</td></tr>';
             }
         }
 
-        // دانلود اکسل برای یک شخص خاص
+        // دانلود اکسل تک‌نفره
         function downloadSingleExcel(index) {
             const m = membersList[index];
-            let csv = "\uFEFFنام,نام خانوادگی,شماره همراه,نوع عضویت\n";
-            csv += `${m.first_name},${m.last_name},${m.mobile},${m.membership_type}\n`;
+            let csv = "\uFEFFنام,نام خانوادگی,کد ملی,شماره همراه,نوع عضویت,وضعیت مسکن,شغل,تحصیلات\n";
+            csv += `${m.first_name},${m.last_name},${m.national_id},${m.mobile},${m.membership_type},${m.housing_status||'-'},${m.job||'-'},${m.education||'-'}\n`;
             
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a");
@@ -171,34 +185,38 @@
             link.click();
         }
 
-        // دانلود PDF برای یک شخص خاص
+        // دانلود PDF تک‌نفره
         function downloadSinglePDF(index) {
             const m = membersList[index];
-            
-            // ساخت یک صفحه HTML موقت برای چاپ
             const printWindow = window.open('', '', 'height=600,width=800');
+            
             printWindow.document.write('<html><head><title>فرم ثبت‌نام</title>');
-            printWindow.document.write('<style>body{font-family:Tahoma; direction:rtl; padding:20px;} table{width:100%; border-collapse:collapse;} th,td{border:1px solid #ccc; padding:10px; text-align:right;}</style>');
+            printWindow.document.write('<style>body{font-family:Tahoma; direction:rtl; padding:30px;} h2{color:#1e3a8a; text-align:center;} table{width:100%; border-collapse:collapse;} th,td{border:1px solid #ccc; padding:12px; text-align:right;} th{background:#f8fafc; width:30%;}</style>');
             printWindow.document.write('</head><body>');
             printWindow.document.write(`<h2>فرم ثبت‌نام - ${m.first_name} ${m.last_name}</h2>`);
             printWindow.document.write('<table>');
             printWindow.document.write(`<tr><th>نام</th><td>${m.first_name}</td></tr>`);
             printWindow.document.write(`<tr><th>نام خانوادگی</th><td>${m.last_name}</td></tr>`);
             printWindow.document.write(`<tr><th>کد ملی</th><td>${m.national_id || '-'}</td></tr>`);
+            printWindow.document.write(`<tr><th>تاریخ تولد</th><td>${m.birth_date || '-'}</td></tr>`);
+            printWindow.document.write(`<tr><th>وضعیت تاهل</th><td>${m.marital_status || '-'}</td></tr>`);
+            printWindow.document.write(`<tr><th>تعداد فرزندان</th><td>${m.children || '-'}</td></tr>`);
             printWindow.document.write(`<tr><th>شماره همراه</th><td>${m.mobile}</td></tr>`);
-            printWindow.document.write(`<tr><th>نوع عضویت</th><td>${m.membership_type}</td></tr>`);
+            printWindow.document.write(`<tr><th>تلفن ثابت</th><td>${m.landline || '-'}</td></tr>`);
+            printWindow.document.write(`<tr><th>آدرس</th><td>${m.address || '-'}</td></tr>`);
             printWindow.document.write(`<tr><th>وضعیت مسکن</th><td>${m.housing_status || '-'}</td></tr>`);
             printWindow.document.write(`<tr><th>شغل</th><td>${m.job || '-'}</td></tr>`);
+            printWindow.document.write(`<tr><th>تحصیلات</th><td>${m.education || '-'}</td></tr>`);
+            printWindow.document.write(`<tr><th>نوع عضویت</th><td>${m.membership_type}</td></tr>`);
             printWindow.document.write('</table>');
             printWindow.document.write('</body></html>');
             
             printWindow.document.close();
             printWindow.focus();
-            // بعد از باز شدن، پنجره چاپ باز میشه
             setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
         }
 
-        // ====== ۲. مدیریت اخبار ======
+        // انتشار خبر
         async function publishNews() {
             const title = document.getElementById('news-title').value;
             const content = document.getElementById('news-content').value;
@@ -233,11 +251,11 @@
                 } else { throw new Error(); }
             } catch (e) {
                 msg.style.color = "red";
-                msg.innerText = "خطا در انتشار خبر!";
+                msg.innerText = "خطا در انتشار خبر! (فیلترشکن را بررسی کنید)";
             }
         }
 
-        // ====== ۳. تغییر رمز ======
+        // تغییر رمز
         async function changePassword() {
             const newPass = document.getElementById('new-password').value;
             const msg = document.getElementById('pass-msg');
@@ -264,11 +282,11 @@
 
                 if (res.ok) {
                     msg.style.color = "green";
-                    msg.innerText = "✅ رمز با موفقیت تغییر کرد!";
+                    msg.innerText = "✅ رمز با موفقیت تغییر کرد! (لینک ورود با رمز جدید کار می‌کند)";
                 } else { throw new Error(); }
             } catch (e) {
                 msg.style.color = "red";
-                msg.innerText = "خطا در تغییر رمز!";
+                msg.innerText = "خطا در تغییر رمز! (فیلترشکن را بررسی کنید)";
             }
         }
     </script>
