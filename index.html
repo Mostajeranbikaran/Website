@@ -219,11 +219,12 @@
         </div>
     </footer>
 
+    <!-- اسکریپت‌های سوپابیس و فرم -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const SUPABASE_URL = 'https://almalzhslughrfqsthi.supabase.co'; 
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NjgxMDcsImV4cCI6MjEwODM0NDEwN30.IDFFy8WZ8r3hxlOCAwFbsOFkXuwHvvs3Sw8UeIGrc1k';
-        
+        // 🔴 آدرس و کلید جدید
+        const SUPABASE_URL = 'https://almalzhslughrfqsthio.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_nbbnzYT0aPekZkxCaEn_Lw_OgDMBUXg';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // حذف انیمیشن بعد از ۲ ثانیه
@@ -236,7 +237,7 @@
 
         document.getElementById('print-date').innerText = "تاریخ ثبت: " + new Date().toLocaleDateString('fa-IR');
 
-        // بارگذاری اخبار
+        // بارگذاری اخبار در صفحه اصلی
         async function loadNews() {
             const container = document.getElementById('news-container');
             const { data, error } = await supabase.from('news').select('*').order('created_at', { ascending: false }).limit(3);
@@ -258,9 +259,10 @@
         }
         loadNews();
 
-        // ارسال فرم ثبت‌نام
+        // ارسال فرم ثبت‌نام (با جلوگیری از رفرش)
         document.getElementById('membership-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
+            e.preventDefault(); // 🚨 جلوگیری از رفرش صفحه
+            
             const btn = document.getElementById('submit-btn');
             const msg = document.getElementById('form-msg');
             
@@ -274,11 +276,10 @@
             const photoFile = formData.get('attachment');
             if (photoFile && photoFile.size > 0) {
                 const fileExt = photoFile.name.split('.').pop();
-                const fileName = `${Date.now()}.${fileExt}`;
+                const fileName = `member-${Date.now()}.${fileExt}`;
                 const { error: uploadError } = await supabase.storage.from('photos').upload(fileName, photoFile);
                 if (!uploadError) {
-                    const { data: publicUrlData } = supabase.storage.from('photos').getPublicUrl(fileName);
-                    photoUrl = publicUrlData.publicUrl;
+                    photoUrl = fileName;
                 }
             }
 
@@ -305,6 +306,7 @@
             const { error } = await supabase.from('members').insert([memberData]);
 
             if (error) {
+                console.error(error);
                 msg.style.color = "red";
                 msg.innerText = "خطا: " + error.message;
                 btn.disabled = false;
@@ -312,10 +314,10 @@
             } else {
                 msg.style.color = "green";
                 msg.innerText = "✅ ثبت‌نام شما با موفقیت انجام شد!";
-                setTimeout(() => { window.print(); }, 500);
                 e.target.reset();
                 btn.disabled = false;
                 btn.innerText = "ارسال فرم و ثبت‌نام";
+                // setTimeout(() => { window.print(); }, 500); // اگر می‌خوای خودکار پرینت بشه، این خط رو آنکامنت کن
             }
         });
     </script>
