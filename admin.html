@@ -9,46 +9,37 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; }
         body { background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
         .login-card { background: #fff; padding: 40px 35px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); width: 100%; max-width: 420px; }
-        .logo-wrap { text-align: center; margin-bottom: 25px; }
-        .logo-wrap img { width: 80px; height: auto; }
-        h2 { color: #1e3a8a; text-align: center; margin-bottom: 8px; font-size: 22px; }
+        h2 { color: #1e3a8a; text-align: center; margin-bottom: 8px; }
         .subtitle { text-align: center; color: #64748b; font-size: 14px; margin-bottom: 30px; }
         .form-group { margin-bottom: 18px; }
         label { display: block; font-weight: 700; font-size: 14px; color: #0f172a; margin-bottom: 8px; }
-        input { width: 100%; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-family: inherit; transition: 0.2s; background: #f8fafc; }
+        input { width: 100%; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-family: inherit; transition: 0.2s; background: #f8fafc; text-align: left; direction: ltr; }
         input:focus { outline: none; border-color: #1e3a8a; background: #fff; box-shadow: 0 0 0 4px rgba(30,58,138,0.1); }
         button { width: 100%; padding: 15px; background: #1e3a8a; color: #fff; border: none; border-radius: 10px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.2s; font-family: inherit; margin-top: 10px; }
-        button:hover:not(:disabled) { background: #152c6b; transform: translateY(-2px); }
+        button:hover:not(:disabled) { background: #152c6b; }
         button:disabled { opacity: 0.6; cursor: not-allowed; }
-        .msg { padding: 12px 16px; border-radius: 10px; font-size: 14px; margin-bottom: 18px; display: none; font-weight: 600; }
+        .msg { padding: 12px 16px; border-radius: 10px; font-size: 14px; margin-bottom: 18px; display: none; font-weight: 600; text-align: center; }
         .msg.error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; display: block; }
         .msg.success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; display: block; }
-        .msg.info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; display: block; }
         .back-link { display: block; text-align: center; margin-top: 22px; color: #64748b; text-decoration: none; font-size: 14px; font-weight: 600; }
-        .back-link:hover { color: #1e3a8a; }
-        .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-left: 8px; vertical-align: middle; }
-        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
 <div class="login-card">
-    <div class="logo-wrap">
-        <img src="logo.png" alt="لوگو" onerror="this.style.display='none'">
-    </div>
     <h2>ورود به پنل مدیریت</h2>
     <p class="subtitle">مرکز توانمندسازی مستاجران و بیکاران</p>
 
     <div id="msg" class="msg"></div>
 
-    <form id="login-form" novalidate>
+    <form id="login-form">
         <div class="form-group">
-            <label for="email">ایمیل</label>
-            <input type="email" id="email" name="email" placeholder="admin@example.com" required autocomplete="username" dir="ltr">
+            <label>ایمیل</label>
+            <input type="email" id="email" required placeholder="tabriz2009@gmail.com">
         </div>
         <div class="form-group">
-            <label for="password">رمز عبور</label>
-            <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password" dir="ltr">
+            <label>رمز عبور</label>
+            <input type="password" id="password" required placeholder="••••••••">
         </div>
         <button type="submit" id="submit-btn">ورود</button>
     </form>
@@ -58,78 +49,43 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// 🔴 آدرس دقیقاً همان که خواستی (با حرف o) و کلید جدید
-const SUPABASE_URL = 'https://almalzhslughrfqsthio.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_nbbnzYT0aPekZkxCaEn_Lw_OgDMBUXg';
+    // ====== کلید مشترک با داشبورد ======
+    const SUPABASE_URL = 'https://almalzhslughrfqsthi.supabase.co'; 
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NjgxMDcsImV4cCI6MjEwODM0NDEwN30.IDFFy8WZ8r3hxlOCAwFbsOFkXuwHvvs3Sw8UeIGrc1k';
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const form = document.getElementById('login-form');
+    const msg = document.getElementById('msg');
+    const btn = document.getElementById('submit-btn');
 
-const form = document.getElementById('login-form');
-const msg = document.getElementById('msg');
-const btn = document.getElementById('submit-btn');
+    function showMsg(text, type) {
+        msg.textContent = text;
+        msg.className = 'msg ' + type;
+    }
 
-function showMsg(text, type = 'info') {
-    msg.textContent = text;
-    msg.className = 'msg ' + type;
-}
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        msg.className = 'msg';
+        btn.disabled = true;
+        btn.innerText = "در حال بررسی...";
 
-function setLoading(loading) {
-    btn.disabled = loading;
-    btn.innerHTML = loading ? 'در حال بررسی... <span class="spinner"></span>' : 'ورود';
-}
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
 
-// چک سشن قبلی
-(async () => {
-    try {
-        const { data: { session } } = await sb.auth.getSession();
-        if (session) window.location.href = 'dashboard.html';
-    } catch (e) { console.error(e); }
-})();
-
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    msg.className = 'msg';
-
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-
-    if (!email || !password) { showMsg('لطفاً ایمیل و رمز عبور را وارد کنید.', 'error'); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showMsg('ایمیل معتبر نیست.', 'error'); return; }
-
-    setLoading(true);
-
-    try {
-        const { data, error } = await sb.auth.signInWithPassword({ email, password });
-
-        if (error) {
-            console.error('Supabase Auth Error:', error);
-            const m = (error.message || '').toLowerCase();
-            if (m.includes('invalid') || m.includes('credentials')) {
-                showMsg('ایمیل یا رمز عبور اشتباه است.', 'error');
-            } else if (m.includes('email not confirmed')) {
-                showMsg('ایمیل شما تأیید نشده است. لطفاً ایمیل خود را بررسی کنید.', 'error');
-            } else if (m.includes('network') || m.includes('fetch')) {
-                showMsg('خطای شبکه: ' + error.message, 'error');
-            } else {
-                showMsg('خطا: ' + error.message, 'error');
-            }
-            setLoading(false);
-            return;
-        }
-
-        if (data?.session) {
+        try {
+            const { data, error } = await sb.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            
+            // اگر لاگین موفق بود، برو به داشبورد
             showMsg('ورود موفق! در حال انتقال...', 'success');
             setTimeout(() => window.location.href = 'dashboard.html', 500);
-        } else {
-            showMsg('خطای ناشناخته: سشن ایجاد نشد.', 'error');
-            setLoading(false);
+            
+        } catch (err) {
+            showMsg('ایمیل یا رمز عبور اشتباه است!', 'error');
+            btn.disabled = false;
+            btn.innerText = "ورود";
         }
-    } catch (err) {
-        console.error('Catch Error:', err);
-        showMsg('خطای غیرمنتظره: ' + err.message, 'error');
-        setLoading(false);
-    }
-});
+    });
 </script>
 </body>
 </html>
