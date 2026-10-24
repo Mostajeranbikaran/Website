@@ -230,8 +230,9 @@ async function loadMembers() {
                         <td dir="ltr">${escapeHtml(item.mobile)}</td>
                         <td><span class="badge">${escapeHtml(item.membership_type)}</span></td>
                         <td>${formatDate(item.created_at)}</td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" onclick="printMember('${item.id}')">🖨️ چاپ فرم</button>
+                        <td style="display:flex; gap:5px;">
+                            <button class="btn btn-primary btn-sm" onclick="printMember('${item.id}')">🖨️ چاپ</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteMember('${item.id}')">🗑️ حذف</button>
                         </td>
                     </tr>
                 `;
@@ -255,7 +256,32 @@ async function loadMembers() {
     }
 }
 
-// ========== چاپ فرم تکی (برای هر شخص) ==========
+// ========== حذف ثبت‌نامی ==========
+async function deleteMember(id) {
+    if (!confirm('آیا از حذف این ثبت‌نامی اطمینان دارید؟ (این عمل غیرقابل بازگشت است)')) return;
+    
+    try {
+        const person = membersData.find(m => m.id == id);
+        if (!person) return;
+
+        // ۱. حذف عکس از فضای ذخیره‌سازی (اگر عکس دارد)
+        const fileName = extractFileName(person.photo_url);
+        if (fileName) {
+            await sb.storage.from('photos').remove([fileName]);
+        }
+
+        // ۲. حذف رکورد از دیتابیس
+        const { error } = await sb.from('members').delete().eq('id', id);
+        if (error) throw error;
+
+        showStatus('ثبت‌نامی با موفقیت حذف شد.', 'success');
+        loadMembers(); // بارگذاری مجدد لیست
+    } catch (e) {
+        showStatus('خطا در حذف: ' + e.message, 'error');
+    }
+}
+
+// ========== چاپ فرم تکی (با لوگو) ==========
 async function printMember(id) {
     const person = membersData.find(m => m.id == id);
     if (!person) return;
@@ -267,7 +293,6 @@ async function printMember(id) {
         if (data) photoHTML = `<img src="${data.signedUrl}" style="width:120px; height:120px; object-fit:cover; border-radius:8px; border:1px solid #ccc;">`;
     }
 
-    // ساخت پنجره جدید برای چاپ
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
         <html dir="rtl">
@@ -276,7 +301,9 @@ async function printMember(id) {
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
             <style>
                 body { font-family: 'Vazirmatn', sans-serif; padding: 20px; color: #000; }
-                h2 { text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; }
+                .header-print { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
+                .header-print img { width: 80px; height: auto; }
+                .header-print h2 { margin: 0; font-size: 20px; }
                 table { width: 100%; border-collapse: collapse; margin-top: 20px; }
                 th, td { border: 1px solid #999; padding: 8px 12px; text-align: right; font-size: 14px; }
                 th { background: #f0f0f0; width: 25%; }
@@ -287,7 +314,11 @@ async function printMember(id) {
             </style>
         </head>
         <body>
-            <h2>فرم ثبت‌نام - مرکز توانمندسازی</h2>
+            <div class="header-print">
+                <img src="logo.png" alt="لوگو">
+                <h2>فرم ثبت‌نام - مرکز توانمندسازی</h2>
+                <div style="width:80px;"></div> <!-- فضای خالی برای وسط چین شدن عنوان -->
+            </div>
             <div class="photo-box">
                 ${photoHTML}
             </div>
