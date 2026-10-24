@@ -8,102 +8,40 @@
     
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="apple-touch-icon" href="favicon.png">
-
-    <meta property="og:title" content="مرکز توانمندسازی مستاجران و بیکاران">
-    <meta property="og:description" content="عضویت رایگان، تعاونی مسکن، بیمه تکمیلی و مشاوره شغلی.">
-    <meta property="og:image" content="https://mostajeranbikaran.github.io/Website/logo.png">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://mostajeranbikaran.github.io/Website/">
-
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* استایل انیمیشن ورودی */
-        #splash-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #ffffff; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 9999;
-            animation: fadeOutSplash 0.5s ease 2s forwards;
-        }
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffffff; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; animation: fadeOutSplash 0.5s ease 2s forwards; }
         .splash-logo { width: 130px; margin-bottom: 20px; animation: zoomIn 1s ease-out forwards; }
         .splash-title { color: #1e3a8a; font-size: 22px; font-weight: 900; opacity: 0; animation: fadeInUp 1s ease-out 0.5s forwards; text-align: center; padding: 0 20px; }
         @keyframes zoomIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes fadeInUp { 0% { transform: translateY(20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
         @keyframes fadeOutSplash { 0% { opacity: 1; visibility: visible; } 100% { opacity: 0; visibility: hidden; display: none; } }
 
-        /* ===== استایل شیشه‌ای و انیمیشن برای کارت‌های خبر ===== */
-        .news-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            padding: 10px;
-            width: 100%;
-        }
+        .news-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; padding: 10px; }
+        .news-card { background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.6); border-radius: 20px; padding: 25px; box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; justify-content: space-between; opacity: 0; transform: translateY(30px); animation: slideUpFade 0.8s ease forwards; }
+        .news-card:nth-child(1) { animation-delay: 0.1s; } .news-card:nth-child(2) { animation-delay: 0.3s; } .news-card:nth-child(3) { animation-delay: 0.5s; }
+        .news-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 15px 40px 0 rgba(31, 38, 135, 0.15); background: rgba(255, 255, 255, 0.8); border-color: rgba(30, 58, 138, 0.3); }
+        .news-date { color: #64748b; font-size: 13px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; font-weight: 600; }
+        .news-card h3 { color: #1e3a8a; font-size: 18px; font-weight: 800; margin-bottom: 12px; line-height: 1.5; }
+        .news-card p { color: #475569; font-size: 14px; line-height: 1.8; margin-bottom: 20px; word-break: break-word; }
+        @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
 
-        .news-card {
-            background: rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            
-            opacity: 0;
-            transform: translateY(30px);
-            animation: slideUpFade 0.8s ease forwards;
-        }
-
-        .news-card:nth-child(1) { animation-delay: 0.1s; }
-        .news-card:nth-child(2) { animation-delay: 0.3s; }
-        .news-card:nth-child(3) { animation-delay: 0.5s; }
-
-        .news-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 15px 40px 0 rgba(31, 38, 135, 0.15);
-            background: rgba(255, 255, 255, 0.7);
-            border-color: rgba(30, 58, 138, 0.3);
-        }
-
-        .news-date {
-            color: #64748b;
-            font-size: 13px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-        }
-
-        .news-card h3 {
-            color: #1e3a8a;
-            font-size: 18px;
-            font-weight: 800;
-            margin-bottom: 12px;
-            line-height: 1.5;
-        }
-
-        .news-card p {
-            color: #475569;
-            font-size: 14px;
-            line-height: 1.8;
-            margin-bottom: 20px;
-            word-break: break-word;
-        }
-
-        @keyframes slideUpFade {
-            to { opacity: 1; transform: translateY(0); }
-        }
+        /* ===== استایل بخش تماس و درباره ما ===== */
+        .contact-section { padding: 80px 0; background: #fff; text-align: center; }
+        .contact-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; margin-top: 40px; }
+        .contact-card { background: #f8fafc; padding: 30px; border-radius: 16px; border: 1px solid #e2e8f0; flex: 1; min-width: 280px; max-width: 350px; transition: 0.3s; }
+        .contact-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: #ea580c; }
+        .contact-card i { font-size: 30px; color: #ea580c; margin-bottom: 15px; }
+        .contact-card h4 { color: #1e3a8a; font-size: 18px; margin-bottom: 10px; }
+        .contact-card p { color: #64748b; font-size: 14px; line-height: 1.8; }
+        .contact-card a { color: #1e3a8a; text-decoration: none; font-weight: bold; }
+        .contact-card a:hover { color: #ea580c; }
     </style>
 </head>
 <body>
 
-    <!-- انیمیشن ورودی -->
     <div id="splash-screen">
         <img src="logo.png" alt="لوگو" class="splash-logo">
         <div class="splash-title">مرکز توانمندسازی مستاجران و بیکاران</div>
@@ -120,6 +58,7 @@
                 <a href="#news">اخبار</a>
                 <a href="#features">مزایای عضویت</a>
                 <a href="#register">ثبت‌نام</a>
+                <a href="#contact">ارتباط با ما</a>
             </nav>
         </div>
     </header>
@@ -148,26 +87,10 @@
         <div class="container">
             <h2 class="section-title">مزایای <span>عضویت</span> در مرکز</h2>
             <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-home"></i></div>
-                    <h3>تعاونی مسکن و مصرف</h3>
-                    <p>امکان بهره‌مندی از خدمات تعاونی برای تأمین مسکن و مایحتاج زندگی.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
-                    <h3>بیمه تکمیلی و تخفیف کارت</h3>
-                    <p>دریافت بیمه تکمیلی و کارت‌های تخفیف برای خریدهای روزمره.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-file-alt"></i></div>
-                    <h3>ارتقای رزومه و مدارک مهارتی</h3>
-                    <p>دوره‌های آموزشی و مدارک مهارتی برای افزایش شانس استخدام.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-gavel"></i></div>
-                    <h3>مشاوره حقوقی و شغلی</h3>
-                    <p>مشاوره رایگان با متخصصان حقوقی و شغلی برای حل مشکلات.</p>
-                </div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-home"></i></div><h3>تعاونی مسکن و مصرف</h3><p>امکان بهره‌مندی از خدمات تعاونی برای تأمین مسکن و مایحتاج زندگی.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-shield-alt"></i></div><h3>بیمه تکمیلی و تخفیف کارت</h3><p>دریافت بیمه تکمیلی و کارت‌های تخفیف برای خریدهای روزمره.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-file-alt"></i></div><h3>ارتقای رزومه و مدارک مهارتی</h3><p>دوره‌های آموزشی و مدارک مهارتی برای افزایش شانس استخدام.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-gavel"></i></div><h3>مشاوره حقوقی و شغلی</h3><p>مشاوره رایگان با متخصصان حقوقی و شغلی برای حل مشکلات.</p></div>
             </div>
         </div>
     </section>
@@ -183,13 +106,10 @@
                         <p>شماره مجوز: 1000534408 | تلفن: ۰۹۱۴۴۱۲۳۵۰۴</p>
                     </div>
                 </div>
-
                 <div class="print-date" id="print-date"></div>
-
                 <div class="btn-group no-print" style="margin-bottom: 30px;">
                     <button onclick="window.print()" class="btn btn-secondary"><i class="fas fa-print"></i> چاپ / ذخیره PDF</button>
                 </div>
-
                 <form id="membership-form">
                     <div class="form-section">
                         <h3 class="form-section-title"><i class="fas fa-users"></i> نوع عضویت</h3>
@@ -207,7 +127,6 @@
                             </select>
                         </div>
                     </div>
-
                     <div class="form-section">
                         <h3 class="form-section-title"><i class="fas fa-user"></i> اطلاعات هویتی</h3>
                         <div class="form-row">
@@ -225,7 +144,6 @@
                             <div class="form-group"><label>تعداد و سن فرزندان</label><input type="text" name="children" placeholder="2 فرزند (5 و 8 ساله)"></div>
                         </div>
                     </div>
-
                     <div class="form-section">
                         <h3 class="form-section-title"><i class="fas fa-home"></i> اطلاعات تماس و سکونت</h3>
                         <div class="form-group"><label>نشانی کامل</label><textarea name="address" rows="2" required></textarea></div>
@@ -240,7 +158,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="form-section">
                         <h3 class="form-section-title"><i class="fas fa-briefcase"></i> اطلاعات شغلی و تحصیلی</h3>
                         <div class="form-row">
@@ -254,7 +171,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="form-section no-print">
                         <h3 class="form-section-title"><i class="fas fa-camera"></i> بارگذاری عکس</h3>
                         <div class="form-group">
@@ -262,12 +178,46 @@
                             <input type="file" name="attachment" accept="image/*">
                         </div>
                     </div>
-
                     <div class="btn-group no-print">
                         <button type="submit" id="submit-btn" class="btn btn-primary" style="width: 100%;">ارسال فرم و ثبت‌نام</button>
                     </div>
                     <p id="form-msg" style="text-align: center; margin-top: 15px; font-weight: bold; color: var(--primary);"></p>
                 </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- بخش ارتباط با ما -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <h2 class="section-title">ارتباط <span>با ما</span></h2>
+            <p style="text-align: center; color: #64748b; margin-bottom: 20px;">دکتر رسول نظرپور - مدیر مرکز توانمندسازی</p>
+            
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <i class="fas fa-phone-alt"></i>
+                    <h4>شماره‌های تماس</h4>
+                    <p dir="ltr">
+                        09144123504<br>
+                        09932985312<br>
+                        09231290864<br>
+                        09362782451
+                    </p>
+                </div>
+                <div class="contact-card">
+                    <i class="fas fa-envelope"></i>
+                    <h4>ایمیل</h4>
+                    <p><a href="mailto:Tabriz2009@gmail.com">Tabriz2009@gmail.com</a></p>
+                </div>
+                <div class="contact-card">
+                    <i class="fas fa-comments"></i>
+                    <h4>پیام‌رسان‌ها و شبکه‌های اجتماعی</h4>
+                    <p>
+                        ایتا، روبیکا، بله، سروش، آی‌گپ<br>
+                        <a href="https://eitaa.com/Admin_mostajeran_bikaran" target="_blank">@Admin_mostajeran_bikaran</a><br>
+                        کانال: <a href="https://eitaa.com/mostajeran_bikaran" target="_blank">@mostajeran_bikaran</a>
+                    </p>
+                </div>
             </div>
         </div>
     </section>
@@ -285,7 +235,6 @@
         </div>
     </footer>
 
-    <!-- اسکریپت‌های سوپابیس و فرم -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const SUPABASE_URL = 'https://almalzhslughrfqsthio.supabase.co';
@@ -302,26 +251,19 @@
             const printDate = document.getElementById('print-date');
             if (printDate) printDate.innerText = "تاریخ ثبت: " + new Date().toLocaleDateString('fa-IR');
 
-            // ========== بارگذاری اخبار ==========
             async function loadNews() {
                 const container = document.getElementById('news-container');
                 try {
                     const { data, error } = await supabase.from('news').select('*').order('created_at', { ascending: false }).limit(3);
-                    
                     if (error || !data || data.length === 0) {
                         container.innerHTML = '<p style="text-align: center; width: 100%; color: #64748b;">هنوز خبری ثبت نشده است.</p>';
                         return;
                     }
-                    
                     container.innerHTML = '';
                     data.forEach(item => {
                         const date = new Date(item.created_at).toLocaleDateString('fa-IR');
-                        
-                        // کوتاه کردن متن به ۲۰ کلمه اول
                         const words = item.content.split(' ');
-                        const shortContent = words.length > 20 
-                            ? words.slice(0, 20).join(' ') + '...' 
-                            : item.content;
+                        const shortContent = words.length > 20 ? words.slice(0, 20).join(' ') + '...' : item.content;
 
                         const card = document.createElement('div');
                         card.className = 'news-card';
@@ -335,17 +277,8 @@
                                 مطالعه بیشتر <i class="fas fa-arrow-left" style="font-size: 12px;"></i>
                             </a>
                         `;
-                        
-                        // افکت hover برای دکمه
-                        card.querySelector('a').addEventListener('mouseover', function() {
-                            this.style.background = '#ea580c';
-                            this.style.color = '#fff';
-                        });
-                        card.querySelector('a').addEventListener('mouseout', function() {
-                            this.style.background = 'transparent';
-                            this.style.color = '#ea580c';
-                        });
-
+                        card.querySelector('a').addEventListener('mouseover', function() { this.style.background = '#ea580c'; this.style.color = '#fff'; });
+                        card.querySelector('a').addEventListener('mouseout', function() { this.style.background = 'transparent'; this.style.color = '#ea580c'; });
                         container.appendChild(card);
                     });
                 } catch(e) {
@@ -355,14 +288,12 @@
             }
             loadNews();
 
-            // ========== فرم ثبت‌نام ==========
             const form = document.getElementById('membership-form');
             if (form) {
                 form.addEventListener('submit', async function(event) {
                     event.preventDefault();
                     const btn = document.getElementById('submit-btn');
                     const msg = document.getElementById('form-msg');
-                    
                     btn.disabled = true;
                     btn.innerText = "در حال ارسال...";
                     msg.innerText = "";
