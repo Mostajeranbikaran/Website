@@ -45,6 +45,7 @@
 
         async function loadNewsDetails() {
             const wrapper = document.getElementById('news-wrapper');
+            // گرفتن ID خبر از آدرس صفحه
             const urlParams = new URLSearchParams(window.location.search);
             const newsId = urlParams.get('id');
 
@@ -63,6 +64,7 @@
 
                 const date = new Date(data.created_at).toLocaleDateString('fa-IR');
                 
+                // اگر عکس داشت، لینک امنش رو می‌گیریم
                 let imgHTML = '';
                 if (data.photo_url) {
                     const fileName = data.photo_url.includes('/') ? data.photo_url.split('/').pop().split('?')[0] : data.photo_url;
@@ -72,6 +74,7 @@
                     }
                 }
 
+                // نمایش نهایی خبر در صفحه
                 wrapper.innerHTML = `
                     <h1 class="news-page-title">${data.title}</h1>
                     <div class="news-page-date"><i class="far fa-calendar-alt"></i> ${date}</div>
