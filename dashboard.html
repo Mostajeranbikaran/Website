@@ -8,15 +8,17 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; }
         body { background: #f1f5f9; min-height: 100vh; padding: 20px; color: #0f172a; }
-        .container { background: #fff; padding: 30px; border-radius: 16px; max-width: 1200px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .container { background: #fff; padding: 30px; border-radius: 16px; max-width: 1300px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
         .topbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 16px; margin-bottom: 20px; }
         h1 { color: #1e3a8a; font-size: 22px; }
-        .user-info { font-size: 13px; color: #64748b; }
+        .user-info { font-size: 13px; color: #64748b; margin-top: 4px; }
         .btn { padding: 10px 18px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-family: inherit; font-size: 14px; transition: 0.2s; }
         .btn-outline { background: #fff; border: 2px solid #cbd5e1; color: #0f172a; }
         .btn-outline:hover { border-color: #1e3a8a; color: #1e3a8a; }
         .btn-danger { background: #ef4444; color: #fff; }
         .btn-danger:hover { background: #dc2626; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+
         .status { padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-size: 14px; font-weight: 600; display: none; }
         .status.error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; display: block; }
         .status.info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; display: block; }
@@ -29,25 +31,42 @@
         tr:hover td { background: #f8fafc; }
         .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; background: #eff6ff; color: #1e3a8a; }
 
-        .loading-overlay {
-            display: none;
-            text-align: center;
-            padding: 40px 20px;
-            color: #64748b;
-            font-weight: 600;
+        .avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            object-fit: cover; border: 2px solid #e2e8f0;
+            cursor: pointer; transition: 0.2s;
         }
+        .avatar:hover { border-color: #1e3a8a; transform: scale(1.1); }
+        .avatar-placeholder {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: #e2e8f0; display: inline-flex; align-items: center;
+            justify-content: center; color: #94a3b8; font-size: 16px;
+        }
+
+        .loading-overlay { display: none; text-align: center; padding: 40px 20px; color: #64748b; font-weight: 600; }
         .loading-overlay.active { display: block; }
         .spinner {
-            display: inline-block;
-            width: 20px; height: 20px;
-            border: 3px solid #e2e8f0;
-            border-top-color: #1e3a8a;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-            margin-left: 8px;
-            vertical-align: middle;
+            display: inline-block; width: 20px; height: 20px;
+            border: 3px solid #e2e8f0; border-top-color: #1e3a8a;
+            border-radius: 50%; animation: spin 0.7s linear infinite;
+            margin-left: 8px; vertical-align: middle;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* مودال نمایش عکس */
+        .modal {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.8); z-index: 9999;
+            justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal.active { display: flex; }
+        .modal img { max-width: 90vw; max-height: 90vh; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+        .modal-close {
+            position: absolute; top: 20px; left: 20px;
+            background: #fff; border: none; width: 40px; height: 40px;
+            border-radius: 50%; font-size: 22px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
     </style>
 </head>
 <body>
@@ -75,16 +94,24 @@
             <thead>
                 <tr>
                     <th>ردیف</th>
+                    <th>عکس</th>
                     <th>نام</th>
                     <th>نام خانوادگی</th>
                     <th>شماره همراه</th>
                     <th>نوع عضویت</th>
                     <th>تاریخ ثبت</th>
+                    <th>عملیات</th>
                 </tr>
             </thead>
             <tbody id="table-body"></tbody>
         </table>
     </div>
+</div>
+
+<!-- مودال عکس -->
+<div class="modal" id="photo-modal">
+    <button class="modal-close" id="modal-close">×</button>
+    <img id="modal-img" src="" alt="عکس عضو">
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -99,7 +126,10 @@ const loadingEl = document.getElementById('loading');
 const tableWrap = document.getElementById('table-wrap');
 const tableBody = document.getElementById('table-body');
 const userInfo = document.getElementById('user-info');
+const photoModal = document.getElementById('photo-modal');
+const modalImg = document.getElementById('modal-img');
 
+// ========== ابزارها ==========
 function showStatus(text, type = 'info') {
     statusEl.textContent = text;
     statusEl.className = 'status ' + type;
@@ -107,7 +137,30 @@ function showStatus(text, type = 'info') {
 function hideStatus() { statusEl.className = 'status'; }
 function showLoading(on) { loadingEl.classList.toggle('active', on); }
 
-// ۱. چک سشن — اگر نبود برو به admin
+function escapeHtml(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+}
+
+function formatDate(iso) {
+    if (!iso) return '-';
+    try { return new Date(iso).toLocaleDateString('fa-IR'); }
+    catch { return '-'; }
+}
+
+// استخراج نام فایل از URL ذخیره‌شده در دیتابیس
+// photo_url ممکنه شامل مسیر کامل یا فقط نام فایل باشه
+function extractFileName(photoUrl) {
+    if (!photoUrl) return null;
+    // اگر فقط نام فایل باشه
+    if (!photoUrl.includes('/')) return photoUrl;
+    // از انتهای URL بعد از آخرین / بگیر
+    const parts = photoUrl.split('?')[0].split('/');
+    return parts[parts.length - 1] || null;
+}
+
+// ========== احراز هویت ==========
 async function requireAuth() {
     try {
         const { data: { session }, error } = await sb.auth.getSession();
@@ -124,63 +177,129 @@ async function requireAuth() {
     }
 }
 
-// ۲. دریافت داده با timeout و retry
-async function fetchMembers(session, attempt = 1) {
+// ========== دریافت داده ==========
+async function fetchMembers(attempt = 1) {
     try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 10000);
+        const timeout = setTimeout(() => controller.abort(), 12000);
 
         const { data, error } = await sb
             .from('members')
-            .select('id, first_name, last_name, mobile, membership_type, created_at')
+            .select('id, first_name, last_name, mobile, membership_type, created_at, photo_url')
             .order('created_at', { ascending: false })
             .abortSignal(controller.signal);
 
         clearTimeout(timeout);
-
         if (error) throw error;
         return data || [];
     } catch (err) {
         if (attempt < 3) {
             console.warn(`Retry ${attempt} for fetchMembers`);
             await new Promise(r => setTimeout(r, 1000 * attempt));
-            return fetchMembers(session, attempt + 1);
+            return fetchMembers(attempt + 1);
         }
         throw err;
     }
 }
 
-// ۳. رندر جدول
-function renderTable(data) {
+// ========== ساخت signed URL برای عکس ==========
+async function getSignedPhotoUrl(fileName) {
+    if (!fileName) return null;
+    try {
+        const { data, error } = await sb.storage
+            .from('photos')
+            .createSignedUrl(fileName, 3600); // ۱ ساعت اعتبار
+        if (error) throw error;
+        return data.signedUrl;
+    } catch (e) {
+        console.warn('Signed URL failed for', fileName, e);
+        return null;
+    }
+}
+
+// ========== رندر جدول ==========
+async function renderTable(data) {
     tableBody.innerHTML = '';
+
     if (!data.length) {
-        tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#64748b; padding:30px;">هنوز کسی ثبت‌نام نکرده است.</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#64748b; padding:30px;">هنوز کسی ثبت‌نام نکرده است.</td></tr>';
         return;
     }
-    data.forEach((item, i) => {
-        const date = item.created_at
-            ? new Date(item.created_at).toLocaleDateString('fa-IR')
-            : '-';
+
+    // ساخت ردیف‌ها با placeholder برای عکس
+    const rows = data.map((item, i) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${i + 1}</td>
+            <td class="photo-cell">
+                <div class="avatar-placeholder">؟</div>
+            </td>
             <td>${escapeHtml(item.first_name || '-')}</td>
             <td>${escapeHtml(item.last_name || '-')}</td>
             <td dir="ltr" style="text-align:right;">${escapeHtml(item.mobile || '-')}</td>
             <td><span class="badge">${escapeHtml(item.membership_type || '-')}</span></td>
-            <td>${date}</td>
+            <td>${formatDate(item.created_at)}</td>
+            <td>
+                <button class="btn btn-outline btn-sm view-btn" disabled>مشاهده</button>
+            </td>
         `;
-        tableBody.appendChild(tr);
+        return { tr, item };
     });
+
+    // اتصال ردیف‌ها به جدول
+    rows.forEach(({ tr }) => tableBody.appendChild(tr));
+
+    // گرفتن signed URL برای هر عکس (به‌صورت موازی)
+    await Promise.all(rows.map(async ({ tr, item }) => {
+        const fileName = extractFileName(item.photo_url);
+        const cell = tr.querySelector('.photo-cell');
+        const viewBtn = tr.querySelector('.view-btn');
+
+        if (!fileName) {
+            cell.innerHTML = '<div class="avatar-placeholder">—</div>';
+            return;
+        }
+
+        const url = await getSignedPhotoUrl(fileName);
+        if (!url) {
+            cell.innerHTML = '<div class="avatar-placeholder">✕</div>';
+            return;
+        }
+
+        // عکس آواتار
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = 'عکس';
+        img.className = 'avatar';
+        img.loading = 'lazy';
+        img.addEventListener('click', () => openModal(url));
+        cell.innerHTML = '';
+        cell.appendChild(img);
+
+        // دکمه مشاهده فعال
+        viewBtn.disabled = false;
+        viewBtn.addEventListener('click', () => openModal(url));
+    }));
 }
 
-function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-    }[c]));
+// ========== مودال ==========
+function openModal(url) {
+    modalImg.src = url;
+    photoModal.classList.add('active');
 }
+function closeModal() {
+    photoModal.classList.remove('active');
+    modalImg.src = '';
+}
+document.getElementById('modal-close').addEventListener('click', closeModal);
+photoModal.addEventListener('click', (e) => {
+    if (e.target === photoModal) closeModal();
+});
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+});
 
-// ۴. بارگذاری کلی
+// ========== بارگذاری کلی ==========
 async function loadData() {
     hideStatus();
     showLoading(true);
@@ -190,30 +309,34 @@ async function loadData() {
         const session = await requireAuth();
         if (!session) return;
 
-        const data = await fetchMembers(session);
-        renderTable(data);
+        const data = await fetchMembers();
+        await renderTable(data);
         tableWrap.style.display = 'block';
     } catch (err) {
         console.error('Load error:', err);
         const m = (err?.message || '').toLowerCase();
         if (m.includes('permission') || m.includes('rls') || m.includes('policy')) {
-            showStatus('دسترسی به داده‌ها مجاز نیست. لطفاً با مدیر سیستم تماس بگیرید (RLS).', 'error');
+            showStatus('دسترسی به داده‌ها مجاز نیست. Policyهای RLS را بررسی کنید.', 'error');
         } else if (m.includes('network') || m.includes('fetch') || m.includes('abort')) {
             showStatus('اتصال به سرور برقرار نشد. اینترنت را بررسی کنید.', 'error');
+        } else if (m.includes('jwt') || m.includes('token')) {
+            showStatus('نشست منقضی شده است. لطفاً دوباره وارد شوید.', 'error');
+            setTimeout(() => window.location.href = 'admin.html', 2000);
         } else {
-            showStatus('خطا در دریافت اطلاعات. لطفاً صفحه را بروزرسانی کنید.', 'error');
+            showStatus('خطا در دریافت اطلاعات. لطفاً بروزرسانی کنید.', 'error');
         }
     } finally {
         showLoading(false);
     }
 }
 
-// ۵. خروج
+// ========== خروج ==========
 document.getElementById('logout-btn').addEventListener('click', async () => {
     try { await sb.auth.signOut(); } catch (e) {}
     window.location.href = 'admin.html';
 });
 
+// ========== بروزرسانی ==========
 document.getElementById('refresh-btn').addEventListener('click', loadData);
 
 // شروع
