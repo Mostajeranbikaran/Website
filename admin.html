@@ -57,11 +57,6 @@
     const msg = document.getElementById('msg');
     const btn = document.getElementById('submit-btn');
 
-    // اگر قبلا لاگین کرده بود، بفرست داشبورد
-    if (localStorage.getItem('isLoggedIn') === 'true') {
-        window.location.href = 'dashboard.html';
-    }
-
     function showMsg(text, type) {
         msg.textContent = text;
         msg.className = 'msg ' + type;
@@ -79,9 +74,6 @@
         try {
             const { data, error } = await sb.auth.signInWithPassword({ email, password });
             if (error) throw error;
-            
-            // ذخیره وضعیت لاگین در مرورگر
-            localStorage.setItem('isLoggedIn', 'true');
             
             showMsg('ورود موفق! در حال انتقال...', 'success');
             setTimeout(() => window.location.href = 'dashboard.html', 500);
