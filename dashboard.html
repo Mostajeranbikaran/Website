@@ -3,70 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پنل مدیریت | ثبت‌نامی‌ها</title>
+    <title>پنل مدیریت | داشبورد</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; }
         body { background: #f1f5f9; min-height: 100vh; padding: 20px; color: #0f172a; }
         .container { background: #fff; padding: 30px; border-radius: 16px; max-width: 1300px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        
+        /* هدر و تب‌ها */
         .topbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 16px; margin-bottom: 20px; }
-        h1 { color: #1e3a8a; font-size: 22px; }
+        .topbar h1 { color: #1e3a8a; font-size: 22px; }
         .user-info { font-size: 13px; color: #64748b; margin-top: 4px; }
-        .btn { padding: 10px 18px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-family: inherit; font-size: 14px; transition: 0.2s; }
-        .btn-outline { background: #fff; border: 2px solid #cbd5e1; color: #0f172a; }
-        .btn-outline:hover { border-color: #1e3a8a; color: #1e3a8a; }
-        .btn-danger { background: #ef4444; color: #fff; }
-        .btn-danger:hover { background: #dc2626; }
-        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        .btn-danger { background: #ef4444; color: #fff; padding: 8px 16px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 14px; }
+        
+        .tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; flex-wrap: wrap; }
+        .tab-btn { background: none; border: none; font-family: inherit; font-size: 15px; color: #64748b; cursor: pointer; padding: 10px 20px; border-radius: 8px; font-weight: 700; transition: 0.3s; }
+        .tab-btn.active { background: #eff6ff; color: #1e3a8a; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-        .status { padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-size: 14px; font-weight: 600; display: none; }
-        .status.error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; display: block; }
-        .status.info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; display: block; }
-        .status.success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; display: block; }
-
+        /* استایل جدول */
         .table-wrap { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 12px 14px; border-bottom: 1px solid #e2e8f0; text-align: right; font-size: 14px; }
-        th { background: #f8fafc; color: #1e3a8a; font-weight: 800; position: sticky; top: 0; }
+        th, td { padding: 12px 14px; border-bottom: 1px solid #e2e8f0; text-align: right; font-size: 14px; white-space: nowrap; }
+        th { background: #f8fafc; color: #1e3a8a; font-weight: 800; }
         tr:hover td { background: #f8fafc; }
         .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; background: #eff6ff; color: #1e3a8a; }
 
-        .avatar {
-            width: 40px; height: 40px; border-radius: 50%;
-            object-fit: cover; border: 2px solid #e2e8f0;
-            cursor: pointer; transition: 0.2s;
-        }
-        .avatar:hover { border-color: #1e3a8a; transform: scale(1.1); }
-        .avatar-placeholder {
-            width: 40px; height: 40px; border-radius: 50%;
-            background: #e2e8f0; display: inline-flex; align-items: center;
-            justify-content: center; color: #94a3b8; font-size: 16px;
-        }
+        /* دکمه‌های عملیات */
+        .btn-sm { padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer; font-size: 12px; font-weight: bold; margin-left: 4px; color: white; }
+        .btn-excel { background: #10b981; }
+        .btn-pdf { background: #ef4444; }
 
-        .loading-overlay { display: none; text-align: center; padding: 40px 20px; color: #64748b; font-weight: 600; }
-        .loading-overlay.active { display: block; }
-        .spinner {
-            display: inline-block; width: 20px; height: 20px;
-            border: 3px solid #e2e8f0; border-top-color: #1e3a8a;
-            border-radius: 50%; animation: spin 0.7s linear infinite;
-            margin-left: 8px; vertical-align: middle;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* مودال نمایش عکس */
-        .modal {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.8); z-index: 9999;
-            justify-content: center; align-items: center; padding: 20px;
-        }
-        .modal.active { display: flex; }
-        .modal img { max-width: 90vw; max-height: 90vh; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
-        .modal-close {
-            position: absolute; top: 20px; left: 20px;
-            background: #fff; border: none; width: 40px; height: 40px;
-            border-radius: 50%; font-size: 22px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-        }
+        /* فرم‌های تب اخبار و تنظیمات */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 700; color: #1e3a8a; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; box-sizing: border-box; }
+        .btn-submit { background: #ea580c; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; }
+        
+        .msg { text-align: center; font-weight: bold; margin-top: 15px; font-size: 14px; }
+        
+        /* لودینگ */
+        .loading { display: none; text-align: center; padding: 30px; color: #64748b; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -74,283 +53,225 @@
 <div class="container">
     <div class="topbar">
         <div>
-            <h1>مدیریت ثبت‌نامی‌ها</h1>
-            <div class="user-info" id="user-info">در حال بررسی کاربر...</div>
+            <h1>مدیریت مرکز</h1>
+            <div class="user-info" id="user-email">در حال بررسی...</div>
         </div>
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button class="btn btn-outline" id="refresh-btn">↻ بروزرسانی</button>
-            <button class="btn btn-danger" id="logout-btn">خروج</button>
+        <a href="admin.html" class="btn-danger" onclick="logout()">خروج از حساب</a>
+    </div>
+
+    <!-- تب‌ها -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('members')">لیست ثبت‌نامی‌ها</button>
+        <button class="tab-btn" onclick="switchTab('news')">مدیریت اخبار</button>
+        <button class="tab-btn" onclick="switchTab('settings')">تغییر رمز</button>
+    </div>
+
+    <!-- تب ۱: ثبت‌نامی‌ها -->
+    <div id="tab-members" class="tab-content active">
+        <div id="loading-members" class="loading">در حال دریافت اطلاعات <span class="spinner"></span></div>
+        <div class="table-wrap" id="table-wrap" style="display:none;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ردیف</th>
+                        <th>نام</th>
+                        <th>نام خانوادگی</th>
+                        <th>شماره همراه</th>
+                        <th>نوع عضویت</th>
+                        <th>تاریخ ثبت</th>
+                        <th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body"></tbody>
+            </table>
         </div>
     </div>
 
-    <div id="status" class="status"></div>
-
-    <div id="loading" class="loading-overlay">
-        در حال بارگذاری <span class="spinner"></span>
+    <!-- تب ۲: اخبار -->
+    <div id="tab-news" class="tab-content">
+        <div class="form-group">
+            <label>عنوان خبر</label>
+            <input type="text" id="news-title" placeholder="عنوان خبر...">
+        </div>
+        <div class="form-group">
+            <label>متن خبر</label>
+            <textarea id="news-content" rows="4" placeholder="متن کامل خبر..."></textarea>
+        </div>
+        <button onclick="publishNews()" class="btn-submit">انتشار خبر</button>
+        <p id="news-msg" class="msg"></p>
     </div>
 
-    <div class="table-wrap" id="table-wrap" style="display:none;">
-        <table>
-            <thead>
-                <tr>
-                    <th>ردیف</th>
-                    <th>عکس</th>
-                    <th>نام</th>
-                    <th>نام خانوادگی</th>
-                    <th>شماره همراه</th>
-                    <th>نوع عضویت</th>
-                    <th>تاریخ ثبت</th>
-                    <th>عملیات</th>
-                </tr>
-            </thead>
-            <tbody id="table-body"></tbody>
-        </table>
+    <!-- تب ۳: تنظیمات (تغییر رمز) -->
+    <div id="tab-settings" class="tab-content">
+        <div class="form-group">
+            <label>رمز عبور جدید</label>
+            <input type="password" id="new-password" placeholder="رمز جدید...">
+        </div>
+        <button onclick="changePassword()" class="btn-submit">ذخیره رمز جدید</button>
+        <p id="pass-msg" class="msg"></p>
     </div>
-</div>
-
-<!-- مودال عکس -->
-<div class="modal" id="photo-modal">
-    <button class="modal-close" id="modal-close">×</button>
-    <img id="modal-img" src="" alt="عکس عضو">
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// 🔴 آدرس دقیقاً همان که خواستی (با حرف o) و کلید جدید
-const SUPABASE_URL = 'https://almalzhslughrfqsthio.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_nbbnzYT0aPekZkxCaEn_Lw_OgDMBUXg';
+    // ====== کلیدهای اتصال ======
+    const SUPABASE_URL = 'https://almalzhslughrfqsthi.supabase.co'; 
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbWFsemhzbHVnaHJmcXN0aGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NjgxMDcsImV4cCI6MjEwODM0NDEwN30.IDFFy8WZ8r3hxlOCAwFbsOFkXuwHvvs3Sw8UeIGrc1k';
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    let membersList = [];
 
-const statusEl = document.getElementById('status');
-const loadingEl = document.getElementById('loading');
-const tableWrap = document.getElementById('table-wrap');
-const tableBody = document.getElementById('table-body');
-const userInfo = document.getElementById('user-info');
-const photoModal = document.getElementById('photo-modal');
-const modalImg = document.getElementById('modal-img');
-
-// ========== ابزارها ==========
-function showStatus(text, type = 'info') {
-    statusEl.textContent = text;
-    statusEl.className = 'status ' + type;
-}
-function hideStatus() { statusEl.className = 'status'; }
-function showLoading(on) { loadingEl.classList.toggle('active', on); }
-
-function escapeHtml(s) {
-    return String(s ?? '').replace(/[&<>"']/g, c => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-    }[c]));
-}
-
-function formatDate(iso) {
-    if (!iso) return '-';
-    try { return new Date(iso).toLocaleDateString('fa-IR'); }
-    catch { return '-'; }
-}
-
-function extractFileName(photoUrl) {
-    if (!photoUrl) return null;
-    if (!photoUrl.includes('/')) return photoUrl;
-    const parts = photoUrl.split('?')[0].split('/');
-    return parts[parts.length - 1] || null;
-}
-
-// ========== احراز هویت (چک کردن ادمین بودن) ==========
-async function requireAuth() {
-    try {
-        const { data: { session }, error } = await sb.auth.getSession();
-        if (error || !session) {
+    // ====== بررسی لاگین ======
+    async function checkAuth() {
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) {
             window.location.href = 'admin.html';
-            return null;
+            return;
         }
-        
-        const { data: adminData, error: adminError } = await sb
-            .from('admins')
-            .select('user_id')
-            .eq('user_id', session.user.id)
-            .maybeSingle();
+        document.getElementById('user-email').innerText = "خوش آمدید، " + session.user.email;
+        loadMembers();
+    }
 
-        if (adminError) {
-            console.error('Admin check error:', adminError);
-        }
-
-        if (!adminData) {
-            alert('شما دسترسی به پنل مدیریت ندارید.');
-            await sb.auth.signOut();
-            window.location.href = 'index.html';
-            return null;
-        }
-
-        userInfo.textContent = 'خوش آمدید، ' + (session.user.email || 'ادمین');
-        return session;
-    } catch (e) {
-        console.error('Auth error:', e);
+    // ====== خروج ======
+    async function logout() {
+        await sb.auth.signOut();
         window.location.href = 'admin.html';
-        return null;
     }
-}
 
-// ========== دریافت داده ==========
-async function fetchMembers(attempt = 1) {
-    try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 12000);
+    // ====== تغییر تب‌ها ======
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + tabName).classList.add('active');
+        event.target.classList.add('active');
+    }
 
-        const { data, error } = await sb
-            .from('members')
-            .select('id, first_name, last_name, mobile, membership_type, created_at, photo_url')
-            .order('created_at', { ascending: false })
-            .abortSignal(controller.signal);
+    // ====== ۱. بارگذاری ثبت‌نامی‌ها ======
+    async function loadMembers() {
+        document.getElementById('loading-members').style.display = 'block';
+        document.getElementById('table-wrap').style.display = 'none';
 
-        clearTimeout(timeout);
-        if (error) throw error;
-        return data || [];
-    } catch (err) {
-        if (attempt < 3) {
-            console.warn(`Retry ${attempt} for fetchMembers`);
-            await new Promise(r => setTimeout(r, 1000 * attempt));
-            return fetchMembers(attempt + 1);
+        try {
+            const { data, error } = await sb.from('members').select('*').order('created_at', { ascending: false });
+            if (error) throw error;
+            
+            membersList = data;
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#64748b;">هنوز کسی ثبت‌نام نکرده است.</td></tr>';
+            } else {
+                data.forEach((item, index) => {
+                    const date = new Date(item.created_at).toLocaleDateString('fa-IR');
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${item.first_name || '-'}</td>
+                            <td>${item.last_name || '-'}</td>
+                            <td>${item.mobile || '-'}</td>
+                            <td><span class="badge">${item.membership_type || '-'}</span></td>
+                            <td>${date}</td>
+                            <td>
+                                <button class="btn-sm btn-excel" onclick="downloadExcel(${index})"><i class="fas fa-file-excel"></i></button>
+                                <button class="btn-sm btn-pdf" onclick="downloadPDF(${index})"><i class="fas fa-file-pdf"></i></button>
+                            </td>
+                        </tr>`;
+                });
+            }
+            document.getElementById('table-wrap').style.display = 'block';
+        } catch (error) {
+            document.getElementById('table-wrap').innerHTML = `<p style="color:red; text-align:center;">خطا در اتصال به دیتابیس: ${error.message}</p>`;
+        } finally {
+            document.getElementById('loading-members').style.display = 'none';
         }
-        throw err;
-    }
-}
-
-// ========== ساخت signed URL برای عکس ==========
-async function getSignedPhotoUrl(fileName) {
-    if (!fileName) return null;
-    try {
-        const { data, error } = await sb.storage
-            .from('photos')
-            .createSignedUrl(fileName, 3600);
-        if (error) throw error;
-        return data.signedUrl;
-    } catch (e) {
-        console.warn('Signed URL failed for', fileName, e);
-        return null;
-    }
-}
-
-// ========== رندر جدول ==========
-async function renderTable(data) {
-    tableBody.innerHTML = '';
-
-    if (!data.length) {
-        tableBody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#64748b; padding:30px;">هنوز کسی ثبت‌نام نکرده است.</td></tr>';
-        return;
     }
 
-    const rows = data.map((item, i) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${i + 1}</td>
-            <td class="photo-cell">
-                <div class="avatar-placeholder">؟</div>
-            </td>
-            <td>${escapeHtml(item.first_name || '-')}</td>
-            <td>${escapeHtml(item.last_name || '-')}</td>
-            <td dir="ltr" style="text-align:right;">${escapeHtml(item.mobile || '-')}</td>
-            <td><span class="badge">${escapeHtml(item.membership_type || '-')}</span></td>
-            <td>${formatDate(item.created_at)}</td>
-            <td>
-                <button class="btn btn-outline btn-sm view-btn" disabled>مشاهده</button>
-            </td>
-        `;
-        return { tr, item };
-    });
+    // ====== دانلود اکسل تک‌نفره ======
+    function downloadExcel(index) {
+        const m = membersList[index];
+        let csv = "\uFEFFنام,نام خانوادگی,کد ملی,شماره همراه,نوع عضویت\n";
+        csv += `${m.first_name},${m.last_name},${m.national_id||'-'},${m.mobile},${m.membership_type}\n`;
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `${m.first_name}_${m.last_name}.csv`;
+        link.click();
+    }
 
-    rows.forEach(({ tr }) => tableBody.appendChild(tr));
+    // ====== دانلود PDF تک‌نفره ======
+    function downloadPDF(index) {
+        const m = membersList[index];
+        const printWindow = window.open('', '', 'height=600,width=800');
+        printWindow.document.write('<html><head><title>فرم ثبت‌نام</title>');
+        printWindow.document.write('<style>body{font-family:Tahoma; direction:rtl; padding:30px;} h2{color:#1e3a8a;} table{width:100%; border-collapse:collapse;} th,td{border:1px solid #ccc; padding:12px; text-align:right;}</style></head><body>');
+        printWindow.document.write(`<h2>فرم ثبت‌نام: ${m.first_name} ${m.last_name}</h2>`);
+        printWindow.document.write('<table>');
+        printWindow.document.write(`<tr><th>نام</th><td>${m.first_name}</td></tr>`);
+        printWindow.document.write(`<tr><th>نام خانوادگی</th><td>${m.last_name}</td></tr>`);
+        printWindow.document.write(`<tr><th>کد ملی</th><td>${m.national_id || '-'}</td></tr>`);
+        printWindow.document.write(`<tr><th>شماره همراه</th><td>${m.mobile}</td></tr>`);
+        printWindow.document.write(`<tr><th>نوع عضویت</th><td>${m.membership_type}</td></tr>`);
+        printWindow.document.write('</table></body></html>');
+        printWindow.document.close();
+        setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
+    }
 
-    await Promise.all(rows.map(async ({ tr, item }) => {
-        const fileName = extractFileName(item.photo_url);
-        const cell = tr.querySelector('.photo-cell');
-        const viewBtn = tr.querySelector('.view-btn');
+    // ====== ۲. انتشار خبر ======
+    async function publishNews() {
+        const title = document.getElementById('news-title').value;
+        const content = document.getElementById('news-content').value;
+        const msg = document.getElementById('news-msg');
 
-        if (!fileName) {
-            cell.innerHTML = '<div class="avatar-placeholder">—</div>';
+        if (!title || !content) {
+            msg.style.color = "red";
+            msg.innerText = "لطفاً عنوان و متن خبر را وارد کنید.";
             return;
         }
 
-        const url = await getSignedPhotoUrl(fileName);
-        if (!url) {
-            cell.innerHTML = '<div class="avatar-placeholder">✕</div>';
+        msg.style.color = "orange";
+        msg.innerText = "در حال ارسال...";
+
+        try {
+            const { error } = await sb.from('news').insert([{ title: title, content: content }]);
+            if (error) throw error;
+            msg.style.color = "green";
+            msg.innerText = "✅ خبر با موفقیت منتشر شد!";
+            document.getElementById('news-title').value = '';
+            document.getElementById('news-content').value = '';
+        } catch (e) {
+            msg.style.color = "red";
+            msg.innerText = "خطا در انتشار خبر: " + e.message;
+        }
+    }
+
+    // ====== ۳. تغییر رمز ======
+    async function changePassword() {
+        const newPass = document.getElementById('new-password').value;
+        const msg = document.getElementById('pass-msg');
+
+        if (newPass.length < 6) {
+            msg.style.color = "red";
+            msg.innerText = "رمز باید حداقل ۶ کاراکتر باشد!";
             return;
         }
 
-        const img = document.createElement('img');
-        img.src = url;
-        img.alt = 'عکس';
-        img.className = 'avatar';
-        img.loading = 'lazy';
-        img.addEventListener('click', () => openModal(url));
-        cell.innerHTML = '';
-        cell.appendChild(img);
+        msg.style.color = "orange";
+        msg.innerText = "در حال ذخیره...";
 
-        viewBtn.disabled = false;
-        viewBtn.addEventListener('click', () => openModal(url));
-    }));
-}
-
-// ========== مودال ==========
-function openModal(url) {
-    modalImg.src = url;
-    photoModal.classList.add('active');
-}
-function closeModal() {
-    photoModal.classList.remove('active');
-    modalImg.src = '';
-}
-document.getElementById('modal-close').addEventListener('click', closeModal);
-photoModal.addEventListener('click', (e) => {
-    if (e.target === photoModal) closeModal();
-});
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeModal();
-});
-
-// ========== بارگذاری کلی ==========
-async function loadData() {
-    hideStatus();
-    showLoading(true);
-    tableWrap.style.display = 'none';
-
-    try {
-        const session = await requireAuth();
-        if (!session) return;
-
-        const data = await fetchMembers();
-        await renderTable(data);
-        tableWrap.style.display = 'block';
-    } catch (err) {
-        console.error('Load error:', err);
-        const m = (err?.message || '').toLowerCase();
-        if (m.includes('permission') || m.includes('rls') || m.includes('policy')) {
-            showStatus('دسترسی به داده‌ها مجاز نیست. Policyهای RLS را بررسی کنید.', 'error');
-        } else if (m.includes('network') || m.includes('fetch') || m.includes('abort')) {
-            showStatus('اتصال به سرور برقرار نشد. اینترنت را بررسی کنید.', 'error');
-        } else if (m.includes('jwt') || m.includes('token')) {
-            showStatus('نشست منقضی شده است. لطفاً دوباره وارد شوید.', 'error');
-            setTimeout(() => window.location.href = 'admin.html', 2000);
+        const { error } = await sb.auth.updateUser({ password: newPass });
+        if (error) {
+            msg.style.color = "red";
+            msg.innerText = "خطا: " + error.message;
         } else {
-            showStatus('خطا در دریافت اطلاعات. لطفاً بروزرسانی کنید.', 'error');
+            msg.style.color = "green";
+            msg.innerText = "✅ رمز با موفقیت تغییر کرد!";
+            document.getElementById('new-password').value = '';
         }
-    } finally {
-        showLoading(false);
     }
-}
 
-// ========== خروج ==========
-document.getElementById('logout-btn').addEventListener('click', async () => {
-    try { await sb.auth.signOut(); } catch (e) {}
-    window.location.href = 'admin.html';
-});
-
-// ========== بروزرسانی ==========
-document.getElementById('refresh-btn').addEventListener('click', loadData);
-
-// شروع
-loadData();
+    // شروع
+    checkAuth();
 </script>
 </body>
 </html>
